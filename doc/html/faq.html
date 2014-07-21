@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Frequently Asked Questions &mdash; fjåge 1.3.1 documentation</title>
+    <title>Frequently Asked Questions &mdash; fjåge 1.3.3 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.1',
+        VERSION:     '1.3.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="fjåge 1.3.1 documentation" href="index.html" />
+    <link rel="top" title="fjåge 1.3.3 documentation" href="index.html" />
     <link rel="prev" title="Simulation" href="simulation.html" /> 
   </head>
   <body>
@@ -34,7 +34,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="simulation.html" title="Simulation"
              accesskey="P">previous</a></li>
-        <li><a href="index.html">fjåge 1.3.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">fjåge 1.3.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar">
@@ -44,6 +44,7 @@
 <li><a class="reference internal" href="#">Frequently Asked Questions</a><ul>
 <li><a class="reference internal" href="#groovy-syntax">Groovy syntax</a></li>
 <li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#precompiled-scripts">Precompiled scripts</a></li>
 </ul>
 </li>
 </ul>
@@ -111,6 +112,19 @@
 </tbody>
 </table>
 </div>
+<div class="section" id="precompiled-scripts">
+<h2>Precompiled scripts<a class="headerlink" href="#precompiled-scripts" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Q:</th><td class="field-body">Why does my precompiled script not work correctly?</td>
+</tr>
+<tr class="field-even field"><th class="field-name">A:</th><td class="field-body">Precompiled scripts should be derived from the <cite>org.arl.fjage.shell.BaseGroovyScript</cite> base class. To do this, ensure that you have the <cite>&#64;groovy.transform.BaseScript org.arl.fjage.shell.BaseGroovyScript fGroovyScript</cite> annotation in the script.</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -125,7 +139,7 @@
         <li class="right" style="margin-right: 10px">
           <a href="simulation.html" title="Simulation"
              >previous</a></li>
-        <li><a href="index.html">fjåge 1.3.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">fjåge 1.3.3 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
