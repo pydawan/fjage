@@ -1,3 +1,4 @@
 org.arl.fjage
+org.arl.fjage.remote
 org.arl.fjage.rmi
 org.arl.fjage.shell

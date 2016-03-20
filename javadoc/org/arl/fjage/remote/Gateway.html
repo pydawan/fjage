@@ -18,8 +18,8 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":42,"i1":42,"i2":42,"i3":42,"i4":42,"i5":42,"i6":42,"i7":42,"i8":42,"i9":42,"i10":42,"i11":42,"i12":42,"i13":42,"i14":42,"i15":42,"i16":42,"i17":42,"i18":42,"i19":42};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -49,10 +49,10 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../../org/arl/fjage/rmi/MasterContainer.html" title="class in org.arl.fjage.rmi"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../org/arl/fjage/remote/MasterContainer.html" title="class in org.arl.fjage.remote"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
-<li><a href="../../../../index.html?org/arl/fjage/rmi/Gateway.html" target="_top">Frames</a></li>
+<li><a href="../../../../index.html?org/arl/fjage/remote/Gateway.html" target="_top">Frames</a></li>
 <li><a href="Gateway.html" target="_top">No&nbsp;Frames</a></li>
 </ul>
 <ul class="navList" id="allclasses_navbar_top">
@@ -91,7 +91,7 @@ var activeTableTab = "activeTableTab";
 <!-- ========= END OF TOP NAVBAR ========= -->
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="subTitle">org.arl.fjage.rmi</div>
+<div class="subTitle">org.arl.fjage.remote</div>
 <h2 title="Class Gateway" class="title">Class Gateway</h2>
 </div>
 <div class="contentContainer">
@@ -99,7 +99,7 @@ var activeTableTab = "activeTableTab";
 <li>java.lang.Object</li>
 <li>
 <ul class="inheritance">
-<li>org.arl.fjage.rmi.Gateway</li>
+<li>org.arl.fjage.remote.Gateway</li>
 </ul>
 </li>
 </ul>
@@ -107,12 +107,8 @@ var activeTableTab = "activeTableTab";
 <ul class="blockList">
 <li class="blockList">
 <hr>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
-<div class="block"><span class="deprecationComment">As of release 1.4, replaced by <a href="../../../../org/arl/fjage/remote/Gateway.html" title="class in org.arl.fjage.remote"><code>Gateway</code></a>.</span></div>
-</div>
 <br>
-<pre>@Deprecated
-public class <span class="typeNameLabel">Gateway</span>
+<pre>public class <span class="typeNameLabel">Gateway</span>
 extends java.lang.Object</pre>
 <div class="block">Gateway to communicate with agents from Java classes. Only agents in a master
  or slave container can be accessed using this gateway.</div>
@@ -136,15 +132,13 @@ extends java.lang.Object</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static long</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#BLOCKING">BLOCKING</a></span></code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#BLOCKING">BLOCKING</a></span></code>
 <div class="block">Represents a blocking timeout of infinite time.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>static long</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#NON_BLOCKING">NON_BLOCKING</a></span></code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#NON_BLOCKING">NON_BLOCKING</a></span></code>
 <div class="block">Represents a non-blocking timeout of 0 seconds.</div>
 </td>
 </tr>
@@ -163,15 +157,15 @@ extends java.lang.Object</pre>
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#Gateway-org.arl.fjage.Platform-java.lang.String-">Gateway</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
-       java.lang.String&nbsp;url)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#Gateway-org.arl.fjage.Platform-java.lang.String-int-">Gateway</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
+       java.lang.String&nbsp;hostname,
+       int&nbsp;port)</code>
 <div class="block">Creates a gateway connecting to a specified master container.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#Gateway-java.lang.String-">Gateway</a></span>(java.lang.String&nbsp;url)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#Gateway-java.lang.String-int-">Gateway</a></span>(java.lang.String&nbsp;hostname,
+       int&nbsp;port)</code>
 <div class="block">Creates a gateway connecting to a specified master container.</div>
 </td>
 </tr>
@@ -185,151 +179,130 @@ extends java.lang.Object</pre>
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t6" class="tableTab"><span><a href="javascript:show(32);">Deprecated Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#agentForService-java.lang.Enum-">agentForService</a></span>(java.lang.Enum&lt;?&gt;&nbsp;service)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#agentForService-java.lang.Enum-">agentForService</a></span>(java.lang.Enum&lt;?&gt;&nbsp;service)</code>
 <div class="block">Finds an agent that provides a named service.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#agentForService-java.lang.String-">agentForService</a></span>(java.lang.String&nbsp;service)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#agentForService-java.lang.String-">agentForService</a></span>(java.lang.String&nbsp;service)</code>
 <div class="block">Finds an agent that provides a named service.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#agentsForService-java.lang.Enum-">agentsForService</a></span>(java.lang.Enum&lt;?&gt;&nbsp;service)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#agentsForService-java.lang.Enum-">agentsForService</a></span>(java.lang.Enum&lt;?&gt;&nbsp;service)</code>
 <div class="block">Finds all agents that provides a named service.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#agentsForService-java.lang.String-">agentsForService</a></span>(java.lang.String&nbsp;service)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#agentsForService-java.lang.String-">agentsForService</a></span>(java.lang.String&nbsp;service)</code>
 <div class="block">Finds all agents that provides a named service.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#finalize--">finalize</a></span>()</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#finalize--">finalize</a></span>()</code>&nbsp;</td>
 </tr>
 <tr id="i5" class="rowColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#receive--">receive</a></span>()</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#receive--">receive</a></span>()</code>
 <div class="block">Returns a message received by the gateway.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#receive-java.lang.Class-">receive</a></span>(java.lang.Class&lt;?&gt;&nbsp;cls)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#receive-java.lang.Class-">receive</a></span>(java.lang.Class&lt;?&gt;&nbsp;cls)</code>
 <div class="block">Returns a message of a given class received by the gateway.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#receive-java.lang.Class-long-">receive</a></span>(java.lang.Class&lt;?&gt;&nbsp;cls,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#receive-java.lang.Class-long-">receive</a></span>(java.lang.Class&lt;?&gt;&nbsp;cls,
        long&nbsp;timeout)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a message of a given class received by the gateway.</div>
 </td>
 </tr>
 <tr id="i8" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#receive-long-">receive</a></span>(long&nbsp;timeout)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#receive-long-">receive</a></span>(long&nbsp;timeout)</code>
 <div class="block">Returns a message received by the agent.</div>
 </td>
 </tr>
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#receive-org.arl.fjage.Message-">receive</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#receive-org.arl.fjage.Message-">receive</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</code>
 <div class="block">Returns a response message received by the gateway.</div>
 </td>
 </tr>
 <tr id="i10" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#receive-org.arl.fjage.MessageFilter-long-">receive</a></span>(<a href="../../../../org/arl/fjage/MessageFilter.html" title="interface in org.arl.fjage">MessageFilter</a>&nbsp;filter,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#receive-org.arl.fjage.MessageFilter-long-">receive</a></span>(<a href="../../../../org/arl/fjage/MessageFilter.html" title="interface in org.arl.fjage">MessageFilter</a>&nbsp;filter,
        long&nbsp;timeout)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a message received by the gateway and matching the given filter.</div>
 </td>
 </tr>
 <tr id="i11" class="rowColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#receive-org.arl.fjage.Message-long-">receive</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#receive-org.arl.fjage.Message-long-">receive</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m,
        long&nbsp;timeout)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a response message received by the gateway.</div>
 </td>
 </tr>
 <tr id="i12" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#request-org.arl.fjage.Message-long-">request</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;msg,
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#request-org.arl.fjage.Message-long-">request</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;msg,
        long&nbsp;timeout)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Sends a request and waits for a response.</div>
 </td>
 </tr>
 <tr id="i13" class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#send-org.arl.fjage.Message-">send</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#send-org.arl.fjage.Message-">send</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</code>
 <div class="block">Sends a message to the recipient indicated in the message.</div>
 </td>
 </tr>
 <tr id="i14" class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#shutdown--">shutdown</a></span>()</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#shutdown--">shutdown</a></span>()</code>
 <div class="block">Closes the gateway.</div>
 </td>
 </tr>
 <tr id="i15" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#subscribe-org.arl.fjage.AgentID-">subscribe</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#subscribe-org.arl.fjage.AgentID-">subscribe</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</code>
 <div class="block">Subscribes the gateway to receive all messages sent to the given topic.</div>
 </td>
 </tr>
 <tr id="i16" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#topic-org.arl.fjage.AgentID-">topic</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#topic-org.arl.fjage.AgentID-">topic</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</code>
 <div class="block">Returns an object representing the notification topic for an agent.</div>
 </td>
 </tr>
 <tr id="i17" class="rowColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#topic-java.lang.Enum-">topic</a></span>(java.lang.Enum&lt;?&gt;&nbsp;topic)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#topic-java.lang.Enum-">topic</a></span>(java.lang.Enum&lt;?&gt;&nbsp;topic)</code>
 <div class="block">Returns an object representing the named topic.</div>
 </td>
 </tr>
 <tr id="i18" class="altColor">
 <td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a></code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#topic-java.lang.String-">topic</a></span>(java.lang.String&nbsp;topic)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#topic-java.lang.String-">topic</a></span>(java.lang.String&nbsp;topic)</code>
 <div class="block">Returns an object representing the named topic.</div>
 </td>
 </tr>
 <tr id="i19" class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/Gateway.html#unsubscribe-org.arl.fjage.AgentID-">unsubscribe</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/Gateway.html#unsubscribe-org.arl.fjage.AgentID-">unsubscribe</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</code>
 <div class="block">Unsubscribes the gateway from a given topic.</div>
 </td>
 </tr>
@@ -362,12 +335,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>NON_BLOCKING</h4>
 <pre>public static final&nbsp;long NON_BLOCKING</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Represents a non-blocking timeout of 0 seconds. Can be used with all
  Agent methods that take a timeout parameter.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../constant-values.html#org.arl.fjage.rmi.Gateway.NON_BLOCKING">Constant Field Values</a></dd>
+<dd><a href="../../../../constant-values.html#org.arl.fjage.remote.Gateway.NON_BLOCKING">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -378,12 +350,11 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>BLOCKING</h4>
 <pre>public static final&nbsp;long BLOCKING</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Represents a blocking timeout of infinite time. Can be used with all
  Agent methods that take a timeout parameter.</div>
 <dl>
 <dt><span class="seeLabel">See Also:</span></dt>
-<dd><a href="../../../../constant-values.html#org.arl.fjage.rmi.Gateway.BLOCKING">Constant Field Values</a></dd>
+<dd><a href="../../../../constant-values.html#org.arl.fjage.remote.Gateway.BLOCKING">Constant Field Values</a></dd>
 </dl>
 </li>
 </ul>
@@ -395,47 +366,45 @@ extends java.lang.Object</pre>
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="Gateway-org.arl.fjage.Platform-java.lang.String-">
+<a name="Gateway-org.arl.fjage.Platform-java.lang.String-int-">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>Gateway</h4>
 <pre>public&nbsp;Gateway(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
-               java.lang.String&nbsp;url)
-        throws java.io.IOException,
-               java.rmi.NotBoundException</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+               java.lang.String&nbsp;hostname,
+               int&nbsp;port)
+        throws java.io.IOException</pre>
 <div class="block">Creates a gateway connecting to a specified master container. The platform specified
- is this call should not be started previously, and will be automatically started
+ in this call should not be started previously, and will be automatically started
  by the gateway.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>platform</code> - platform to use</dd>
-<dd><code>url</code> - URL of master platform to connect to.</dd>
+<dd><code>hostname</code> - hostname to connect to.</dd>
+<dd><code>port</code> - TCP port to connect to.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
-<dd><code>java.rmi.NotBoundException</code></dd>
 </dl>
 </li>
 </ul>
-<a name="Gateway-java.lang.String-">
+<a name="Gateway-java.lang.String-int-">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Gateway</h4>
-<pre>public&nbsp;Gateway(java.lang.String&nbsp;url)
-        throws java.io.IOException,
-               java.rmi.NotBoundException</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<pre>public&nbsp;Gateway(java.lang.String&nbsp;hostname,
+               int&nbsp;port)
+        throws java.io.IOException</pre>
 <div class="block">Creates a gateway connecting to a specified master container.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>url</code> - URL of master platform to connect to.</dd>
+<dd><code>hostname</code> - hostname to connect to.</dd>
+<dd><code>port</code> - TCP port to connect to.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
-<dd><code>java.rmi.NotBoundException</code></dd>
 </dl>
 </li>
 </ul>
@@ -454,7 +423,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>shutdown</h4>
 <pre>public&nbsp;void&nbsp;shutdown()</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Closes the gateway. The gateway functionality may not longer be accessed after
  this method is called.</div>
 </li>
@@ -466,7 +434,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>send</h4>
 <pre>public&nbsp;void&nbsp;send(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Sends a message to the recipient indicated in the message. The recipient
  may be an agent or a topic.</div>
 <dl>
@@ -483,7 +450,6 @@ extends java.lang.Object</pre>
 <h4>receive</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;receive(<a href="../../../../org/arl/fjage/MessageFilter.html" title="interface in org.arl.fjage">MessageFilter</a>&nbsp;filter,
                        long&nbsp;timeout)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a message received by the gateway and matching the given filter.
  This method blocks until timeout if no message available.</div>
 <dl>
@@ -502,7 +468,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>receive</h4>
 <pre>public final&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;receive()</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a message received by the gateway. This method is non-blocking.</div>
 <dl>
 <dt><span class="returnLabel">Returns:</span></dt>
@@ -517,7 +482,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>receive</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;receive(long&nbsp;timeout)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a message received by the agent. This method blocks until timeout if no
  message available.</div>
 <dl>
@@ -535,7 +499,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>receive</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;receive(java.lang.Class&lt;?&gt;&nbsp;cls)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a message of a given class received by the gateway. This method is non-blocking.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -553,7 +516,6 @@ extends java.lang.Object</pre>
 <h4>receive</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;receive(java.lang.Class&lt;?&gt;&nbsp;cls,
                        long&nbsp;timeout)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a message of a given class received by the gateway. This method blocks until
  timeout if no message available.</div>
 <dl>
@@ -572,7 +534,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>receive</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;receive(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a response message received by the gateway. This method is non-blocking.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -590,7 +551,6 @@ extends java.lang.Object</pre>
 <h4>receive</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;receive(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m,
                        long&nbsp;timeout)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns a response message received by the gateway. This method blocks until
  timeout if no message available.</div>
 <dl>
@@ -610,7 +570,6 @@ extends java.lang.Object</pre>
 <h4>request</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;request(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;msg,
                        long&nbsp;timeout)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Sends a request and waits for a response. This method blocks until timeout
  if no response is received.</div>
 <dl>
@@ -629,7 +588,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>topic</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic(java.lang.String&nbsp;topic)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns an object representing the named topic.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -646,7 +604,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>topic</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic(java.lang.Enum&lt;?&gt;&nbsp;topic)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns an object representing the named topic.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -663,7 +620,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>topic</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Returns an object representing the notification topic for an agent.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -680,7 +636,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>subscribe</h4>
 <pre>public&nbsp;boolean&nbsp;subscribe(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Subscribes the gateway to receive all messages sent to the given topic.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -697,7 +652,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>unsubscribe</h4>
 <pre>public&nbsp;boolean&nbsp;unsubscribe(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;topic)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Unsubscribes the gateway from a given topic.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -714,7 +668,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>agentForService</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;agentForService(java.lang.String&nbsp;service)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Finds an agent that provides a named service. If multiple agents are registered
  to provide a given service, any of the agents' id may be returned.</div>
 <dl>
@@ -732,7 +685,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>agentForService</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;agentForService(java.lang.Enum&lt;?&gt;&nbsp;service)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Finds an agent that provides a named service. If multiple agents are registered
  to provide a given service, any of the agents' id may be returned.</div>
 <dl>
@@ -750,7 +702,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>agentsForService</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]&nbsp;agentsForService(java.lang.String&nbsp;service)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Finds all agents that provides a named service.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -767,7 +718,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>agentsForService</h4>
 <pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]&nbsp;agentsForService(java.lang.Enum&lt;?&gt;&nbsp;service)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block">Finds all agents that provides a named service.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -784,7 +734,6 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>finalize</h4>
 <pre>public&nbsp;void&nbsp;finalize()</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <dl>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code>finalize</code>&nbsp;in class&nbsp;<code>java.lang.Object</code></dd>
@@ -819,10 +768,10 @@ extends java.lang.Object</pre>
 <div class="subNav">
 <ul class="navList">
 <li>Prev&nbsp;Class</li>
-<li><a href="../../../../org/arl/fjage/rmi/MasterContainer.html" title="class in org.arl.fjage.rmi"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../org/arl/fjage/remote/MasterContainer.html" title="class in org.arl.fjage.remote"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
-<li><a href="../../../../index.html?org/arl/fjage/rmi/Gateway.html" target="_top">Frames</a></li>
+<li><a href="../../../../index.html?org/arl/fjage/remote/Gateway.html" target="_top">Frames</a></li>
 <li><a href="Gateway.html" target="_top">No&nbsp;Frames</a></li>
 </ul>
 <ul class="navList" id="allclasses_navbar_bottom">

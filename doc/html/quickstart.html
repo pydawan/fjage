@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting Started &mdash; fjåge 1.3.4 documentation</title>
+    <title>Getting Started &mdash; fjåge 1.4 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.4',
+        VERSION:     '1.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="fjåge 1.3.4 documentation" href="index.html" />
+    <link rel="top" title="fjåge 1.4 documentation" href="index.html" />
     <link rel="next" title="Agents and Behaviors" href="behaviors.html" />
     <link rel="prev" title="Introduction" href="introduction.html" /> 
   </head>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="introduction.html" title="Introduction"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.3.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -113,7 +113,7 @@
 fjage.sh
 logs/
 build/libs/
-  fjage-1.3.4.jar
+  fjage-1.4.jar
   groovy-all-2.4.4.jar
   commons-lang3-3.1.jar
   jline-2.12.jar
@@ -141,7 +141,7 @@ samples/
 fjage.bat
 logs/
 build/libs/
-  fjage-1.3.4.jar
+  fjage-1.4.jar
   groovy-all-2.4.4.jar
   commons-lang3-3.1.jar
   jline-2.12.jar
@@ -168,7 +168,7 @@ samples/
 <p>To check that your fjåge installation is correctly working, type <cite>./fjage.sh</cite> (or fjage.bat in command prompt). That should simply give you an interactive fjåge Groovy shell with a <cite>&gt;</cite> prompt. Type <cite>ps</cite> to see a list of running agents. There should be only one <cite>shell</cite> agent created by the default <cite>initrc.groovy</cite> script. Type <cite>shutdown</cite> or press control-D to terminate fjåge.</p>
 <div class="highlight-console"><div class="highlight"><pre><span class="go">bash$ ./fjage.sh</span>
 <span class="gp">&gt;</span> ps
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span> shutdown
 
 <span class="go">bash$</span>
@@ -197,8 +197,8 @@ samples/
 <div class="highlight-console"><div class="highlight"><pre><span class="go">bash$ ./fjage.sh</span>
 <span class="gp">&gt;</span> &lt;hello
 <span class="gp">&gt;</span> ps
-<span class="go">hello: HelloWorldAgent - IDLE</span>
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">hello</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span> shutdown
 
 <span class="go">bash$ cat logs/log-0.txt | grep HelloWorldAgent@</span>
@@ -224,15 +224,15 @@ samples/
 <div class="highlight-console"><div class="highlight"><pre><span class="go">bash$ ./fjage.sh</span>
 <span class="gp">&gt;</span> &lt;hello
 <span class="gp">&gt;</span> ps
-<span class="go">hello: HelloWorldAgent - IDLE</span>
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">hello</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span> container.kill agent<span class="o">(</span><span class="s1">&#39;hello&#39;</span><span class="o">)</span><span class="p">;</span>
 <span class="gp">&gt;</span> ps
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span> &lt;hello
 <span class="gp">&gt;</span> ps
-<span class="go">hello: HelloWorldAgent - IDLE</span>
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">hello</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span>
 </pre></div>
 </div>
@@ -266,11 +266,11 @@ samples/
 <p>The <cite>fjage.sh</cite> startup script includes all jar files from the <cite>build/libs</cite> folder into the classpath. So you could simply copy your jar file into the <cite>build/libs</cite> folder and then run <cite>fjage.sh</cite>. You can then load the agent on the interactive shell:</p>
 <div class="highlight-console"><div class="highlight"><pre><span class="go">bash$ ./fjage.sh</span>
 <span class="gp">&gt;</span> ps
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span> container.add <span class="s1">&#39;hello&#39;</span>, new HelloWorldAgent<span class="o">()</span><span class="p">;</span>
 <span class="gp">&gt;</span> ps
-<span class="go">hello: HelloWorldAgent - IDLE</span>
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">hello</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span>
 </pre></div>
 </div>
@@ -349,7 +349,7 @@ samples/
         <li class="right" >
           <a href="introduction.html" title="Introduction"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.3.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">

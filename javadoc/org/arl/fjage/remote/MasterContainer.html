@@ -18,8 +18,8 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":42,"i1":42,"i2":42,"i3":42,"i4":42,"i5":42,"i6":42,"i7":42};
-var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"],32:["t6","Deprecated Methods"]};
+var methods = {"i0":10,"i1":10,"i2":10,"i3":10,"i4":10,"i5":10,"i6":10,"i7":10,"i8":10,"i9":10,"i10":10};
+var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
 var tableTab = "tableTab";
@@ -48,11 +48,11 @@ var activeTableTab = "activeTableTab";
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../org/arl/fjage/rmi/Gateway.html" title="class in org.arl.fjage.rmi"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../org/arl/fjage/remote/Gateway.html" title="class in org.arl.fjage.remote"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../org/arl/fjage/remote/SlaveContainer.html" title="class in org.arl.fjage.remote"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
-<li><a href="../../../../index.html?org/arl/fjage/rmi/MasterContainer.html" target="_top">Frames</a></li>
+<li><a href="../../../../index.html?org/arl/fjage/remote/MasterContainer.html" target="_top">Frames</a></li>
 <li><a href="MasterContainer.html" target="_top">No&nbsp;Frames</a></li>
 </ul>
 <ul class="navList" id="allclasses_navbar_top">
@@ -91,7 +91,7 @@ var activeTableTab = "activeTableTab";
 <!-- ========= END OF TOP NAVBAR ========= -->
 <!-- ======== START OF CLASS DATA ======== -->
 <div class="header">
-<div class="subTitle">org.arl.fjage.rmi</div>
+<div class="subTitle">org.arl.fjage.remote</div>
 <h2 title="Class MasterContainer" class="title">Class MasterContainer</h2>
 </div>
 <div class="contentContainer">
@@ -102,7 +102,7 @@ var activeTableTab = "activeTableTab";
 <li><a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">org.arl.fjage.Container</a></li>
 <li>
 <ul class="inheritance">
-<li>org.arl.fjage.rmi.MasterContainer</li>
+<li>org.arl.fjage.remote.MasterContainer</li>
 </ul>
 </li>
 </ul>
@@ -111,19 +111,10 @@ var activeTableTab = "activeTableTab";
 <div class="description">
 <ul class="blockList">
 <li class="blockList">
-<dl>
-<dt>All Implemented Interfaces:</dt>
-<dd>java.rmi.Remote, <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></dd>
-</dl>
 <hr>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;
-<div class="block"><span class="deprecationComment">As of release 1.4, replaced by <a href="../../../../org/arl/fjage/remote/MasterContainer.html" title="class in org.arl.fjage.remote"><code>MasterContainer</code></a>.</span></div>
-</div>
 <br>
-<pre>@Deprecated
-public class <span class="typeNameLabel">MasterContainer</span>
-extends <a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a>
-implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></pre>
+<pre>public class <span class="typeNameLabel">MasterContainer</span>
+extends <a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></pre>
 <div class="block">Master container supporting multiple remote slave containers. Agents in linked
  master and slave containers function as if they were in the same container,
  i.e., are able to communicate with each other through messaging, topics and
@@ -161,31 +152,27 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a master container.</div>
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform)</code>
+<div class="block">Creates a master container, runs its TCP server on an automatically selected port.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-int-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-int-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
                int&nbsp;port)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a master container, runs its container stub on a specified port.</div>
+<div class="block">Creates a master container, runs its TCP server on a specified port.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-java.lang.String-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-java.lang.String-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
                java.lang.String&nbsp;name)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a named master container.</div>
+<div class="block">Creates a named master container, runs its TCP server on an automatically selected port.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-java.lang.String-int-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#MasterContainer-org.arl.fjage.Platform-java.lang.String-int-">MasterContainer</a></span>(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
                java.lang.String&nbsp;name,
                int&nbsp;port)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a named master container, runs its container stub on a specified port.</div>
+<div class="block">Creates a named master container, runs its TCP server on a specified port.</div>
 </td>
 </tr>
 </table>
@@ -198,65 +185,75 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 </a>
 <h3>Method Summary</h3>
 <table class="memberSummary" border="0" cellpadding="3" cellspacing="0" summary="Method Summary table, listing methods, and an explanation">
-<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t6" class="tableTab"><span><a href="javascript:show(32);">Deprecated Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
+<caption><span id="t0" class="activeTableTab"><span>All Methods</span><span class="tabEnd">&nbsp;</span></span><span id="t2" class="tableTab"><span><a href="javascript:show(2);">Instance Methods</a></span><span class="tabEnd">&nbsp;</span></span><span id="t4" class="tableTab"><span><a href="javascript:show(8);">Concrete Methods</a></span><span class="tabEnd">&nbsp;</span></span></caption>
 <tr>
 <th class="colFirst" scope="col">Modifier and Type</th>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr id="i0" class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#attachSlave-java.lang.String-">attachSlave</a></span>(java.lang.String&nbsp;url)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Attaches a slave container to the master container.</div>
+<td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a></code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#agentForService-java.lang.String-">agentForService</a></span>(java.lang.String&nbsp;service)</code>
+<div class="block">Finds an agent providing a named service.</div>
 </td>
 </tr>
 <tr id="i1" class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#detachSlave-java.lang.String-">detachSlave</a></span>(java.lang.String&nbsp;url)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Detaches a slave container from the master container.</div>
+<td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#agentsForService-java.lang.String-">agentsForService</a></span>(java.lang.String&nbsp;service)</code>
+<div class="block">Finds all agents providing a named service.</div>
 </td>
 </tr>
 <tr id="i2" class="altColor">
-<td class="colFirst"><code>java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#getURL--">getURL</a></span>()</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Gets the remote access URL of the container.</div>
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#connectionClosed-org.arl.fjage.remote.ConnectionHandler-">connectionClosed</a></span>(org.arl.fjage.remote.ConnectionHandler&nbsp;handler)</code>
+<div class="block">Callback for closure of connection to remote container.</div>
 </td>
 </tr>
 <tr id="i3" class="rowColor">
-<td class="colFirst"><code>protected boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#isDuplicate-org.arl.fjage.AgentID-">isDuplicate</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;aid)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Checks if an agent id already exists in the container.</div>
+<td class="colFirst"><code><a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#getAgents--">getAgents</a></span>()</code>
+<div class="block">Gets all agent ids in the container.</div>
 </td>
 </tr>
 <tr id="i4" class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#send-org.arl.fjage.Message-">send</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Sends a message.</div>
+<td class="colFirst"><code>int</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#getPort--">getPort</a></span>()</code>
+<div class="block">Gets the TCP port on which the master container listens for connections.</div>
 </td>
 </tr>
 <tr id="i5" class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#send-org.arl.fjage.Message-boolean-">send</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m,
-    boolean&nbsp;relay)</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Sends a message.</div>
+<td class="colFirst"><code>java.lang.String[]</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#getServices--">getServices</a></span>()</code>
+<div class="block">Gets a list of all services that agents in this container provide.</div>
 </td>
 </tr>
 <tr id="i6" class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#shutdown--">shutdown</a></span>()</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Terminates the container and all agents in it.</div>
+<td class="colFirst"><code>protected boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#isDuplicate-org.arl.fjage.AgentID-">isDuplicate</a></span>(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;aid)</code>
+<div class="block">Checks if an agent id already exists in the container.</div>
 </td>
 </tr>
 <tr id="i7" class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#send-org.arl.fjage.Message-">send</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</code>
+<div class="block">Sends a message.</div>
+</td>
+</tr>
+<tr id="i8" class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#send-org.arl.fjage.Message-boolean-">send</a></span>(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m,
+    boolean&nbsp;relay)</code>
+<div class="block">Sends a message.</div>
+</td>
+</tr>
+<tr id="i9" class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#shutdown--">shutdown</a></span>()</code>
+<div class="block">Terminates the container and all agents in it.</div>
+</td>
+</tr>
+<tr id="i10" class="altColor">
 <td class="colFirst"><code>java.lang.String</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/rmi/MasterContainer.html#toString--">toString</a></span>()</code>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../org/arl/fjage/remote/MasterContainer.html#toString--">toString</a></span>()</code>
 <div class="block">Gets a string representation of the container.</div>
 </td>
 </tr>
@@ -266,7 +263,7 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;org.arl.fjage.<a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></h3>
-<code><a href="../../../../org/arl/fjage/Container.html#add-org.arl.fjage.Agent-">add</a>, <a href="../../../../org/arl/fjage/Container.html#add-java.lang.String-org.arl.fjage.Agent-">add</a>, <a href="../../../../org/arl/fjage/Container.html#agentForService-java.lang.String-">agentForService</a>, <a href="../../../../org/arl/fjage/Container.html#agentsForService-java.lang.String-">agentsForService</a>, <a href="../../../../org/arl/fjage/Container.html#canLocateAgent-org.arl.fjage.AgentID-">canLocateAgent</a>, <a href="../../../../org/arl/fjage/Container.html#clone-T-">clone</a>, <a href="../../../../org/arl/fjage/Container.html#containsAgent-org.arl.fjage.AgentID-">containsAgent</a>, <a href="../../../../org/arl/fjage/Container.html#deregister-org.arl.fjage.AgentID-">deregister</a>, <a href="../../../../org/arl/fjage/Container.html#deregister-org.arl.fjage.AgentID-java.lang.String-">deregister</a>, <a href="../../../../org/arl/fjage/Container.html#getAgent-org.arl.fjage.AgentID-">getAgent</a>, <a href="../../../../org/arl/fjage/Container.html#getAgents--">getAgents</a>, <a href="../../../../org/arl/fjage/Container.html#getAutoClone--">getAutoClone</a>, <a href="../../../../org/arl/fjage/Container.html#getName--">getName</a>, <a href="../../../../org/arl/fjage/Container.html#getPlatform--">getPlatform</a>, <a href="../../../../org/arl/fjage/Container.html#getServices--">getServices</a>, <a href="../../../../org/arl/fjage/Container.html#getState--">getState</a>, <a href="../../../../org/arl/fjage/Container.html#isIdle--">isIdle</a>, <a href="../../../../org/arl/fjage/Container.html#isRunning--">isRunning</a>, <a href="../../../../org/arl/fjage/Container.html#kill-org.arl.fjage.AgentID-">kill</a>, <a href="../../../../org/arl/fjage/Container.html#kill-java.lang.String-">kill</a>, <a href="../../../../org/arl/fjage/Container.html#register-org.arl.fjage.AgentID-java.lang.String-">register</a>, <a href="../../../../org/arl/fjage/Container.html#setAutoClone-boolean-">setAutoClone</a>, <a href="../../../../org/arl/fjage/Container.html#setCloner-java.lang.String-">setCloner</a>, <a href="../../../../org/arl/fjage/Container.html#setName-java.lang.String-">setName</a>, <a href="../../../../org/arl/fjage/Container.html#subscribe-org.arl.fjage.AgentID-org.arl.fjage.AgentID-">subscribe</a>, <a href="../../../../org/arl/fjage/Container.html#unsubscribe-org.arl.fjage.AgentID-">unsubscribe</a>, <a href="../../../../org/arl/fjage/Container.html#unsubscribe-org.arl.fjage.AgentID-org.arl.fjage.AgentID-">unsubscribe</a></code></li>
+<code><a href="../../../../org/arl/fjage/Container.html#add-org.arl.fjage.Agent-">add</a>, <a href="../../../../org/arl/fjage/Container.html#add-java.lang.String-org.arl.fjage.Agent-">add</a>, <a href="../../../../org/arl/fjage/Container.html#canLocateAgent-org.arl.fjage.AgentID-">canLocateAgent</a>, <a href="../../../../org/arl/fjage/Container.html#clone-T-">clone</a>, <a href="../../../../org/arl/fjage/Container.html#containsAgent-org.arl.fjage.AgentID-">containsAgent</a>, <a href="../../../../org/arl/fjage/Container.html#deregister-org.arl.fjage.AgentID-">deregister</a>, <a href="../../../../org/arl/fjage/Container.html#deregister-org.arl.fjage.AgentID-java.lang.String-">deregister</a>, <a href="../../../../org/arl/fjage/Container.html#getAgent-org.arl.fjage.AgentID-">getAgent</a>, <a href="../../../../org/arl/fjage/Container.html#getAutoClone--">getAutoClone</a>, <a href="../../../../org/arl/fjage/Container.html#getName--">getName</a>, <a href="../../../../org/arl/fjage/Container.html#getPlatform--">getPlatform</a>, <a href="../../../../org/arl/fjage/Container.html#getState--">getState</a>, <a href="../../../../org/arl/fjage/Container.html#isIdle--">isIdle</a>, <a href="../../../../org/arl/fjage/Container.html#isRunning--">isRunning</a>, <a href="../../../../org/arl/fjage/Container.html#kill-org.arl.fjage.AgentID-">kill</a>, <a href="../../../../org/arl/fjage/Container.html#kill-java.lang.String-">kill</a>, <a href="../../../../org/arl/fjage/Container.html#register-org.arl.fjage.AgentID-java.lang.String-">register</a>, <a href="../../../../org/arl/fjage/Container.html#setAutoClone-boolean-">setAutoClone</a>, <a href="../../../../org/arl/fjage/Container.html#setCloner-java.lang.String-">setCloner</a>, <a href="../../../../org/arl/fjage/Container.html#setName-java.lang.String-">setName</a>, <a href="../../../../org/arl/fjage/Container.html#subscribe-org.arl.fjage.AgentID-org.arl.fjage.AgentID-">subscribe</a>, <a href="../../../../org/arl/fjage/Container.html#unsubscribe-org.arl.fjage.AgentID-">unsubscribe</a>, <a href="../../../../org/arl/fjage/Container.html#unsubscribe-org.arl.fjage.AgentID-org.arl.fjage.AgentID-">unsubscribe</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods.inherited.from.class.java.lang.Object">
@@ -274,13 +271,6 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 </a>
 <h3>Methods inherited from class&nbsp;java.lang.Object</h3>
 <code>clone, equals, finalize, getClass, hashCode, notify, notifyAll, wait, wait, wait</code></li>
-</ul>
-<ul class="blockList">
-<li class="blockList"><a name="methods.inherited.from.class.org.arl.fjage.rmi.RemoteContainer">
-<!--   -->
-</a>
-<h3>Methods inherited from interface&nbsp;org.arl.fjage.rmi.<a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></h3>
-<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#agentForService-java.lang.String-">agentForService</a>, <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#agentsForService-java.lang.String-">agentsForService</a>, <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#containsAgent-org.arl.fjage.AgentID-">containsAgent</a>, <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#deregister-org.arl.fjage.AgentID-">deregister</a>, <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#deregister-org.arl.fjage.AgentID-java.lang.String-">deregister</a>, <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#register-org.arl.fjage.AgentID-java.lang.String-">register</a></code></li>
 </ul>
 </li>
 </ul>
@@ -304,8 +294,7 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <h4>MasterContainer</h4>
 <pre>public&nbsp;MasterContainer(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform)
                 throws java.io.IOException</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a master container.</div>
+<div class="block">Creates a master container, runs its TCP server on an automatically selected port.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>platform</code> - platform on which the container runs.</dd>
@@ -323,12 +312,11 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <pre>public&nbsp;MasterContainer(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
                        int&nbsp;port)
                 throws java.io.IOException</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a master container, runs its container stub on a specified port.</div>
+<div class="block">Creates a master container, runs its TCP server on a specified port.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>platform</code> - platform on which the container runs.</dd>
-<dd><code>port</code> - port on which the container's stub runs.</dd>
+<dd><code>port</code> - port on which the container's TCP server runs.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
 </dl>
@@ -343,8 +331,7 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <pre>public&nbsp;MasterContainer(<a href="../../../../org/arl/fjage/Platform.html" title="class in org.arl.fjage">Platform</a>&nbsp;platform,
                        java.lang.String&nbsp;name)
                 throws java.io.IOException</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a named master container.</div>
+<div class="block">Creates a named master container, runs its TCP server on an automatically selected port.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>platform</code> - platform on which the container runs.</dd>
@@ -364,13 +351,12 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
                        java.lang.String&nbsp;name,
                        int&nbsp;port)
                 throws java.io.IOException</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block">Creates a named master container, runs its container stub on a specified port.</div>
+<div class="block">Creates a named master container, runs its TCP server on a specified port.</div>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>platform</code> - platform on which the container runs.</dd>
 <dd><code>name</code> - of the container.</dd>
-<dd><code>port</code> - port on which the container's stub runs.</dd>
+<dd><code>port</code> - port on which the container's TCP server runs.</dd>
 <dt><span class="throwsLabel">Throws:</span></dt>
 <dd><code>java.io.IOException</code></dd>
 </dl>
@@ -384,21 +370,17 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <!--   -->
 </a>
 <h3>Method Detail</h3>
-<a name="getURL--">
+<a name="getPort--">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>getURL</h4>
-<pre>public&nbsp;java.lang.String&nbsp;getURL()</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#getURL--">RemoteContainer</a></code></span></div>
-<div class="block">Gets the remote access URL of the container.</div>
+<h4>getPort</h4>
+<pre>public&nbsp;int&nbsp;getPort()</pre>
+<div class="block">Gets the TCP port on which the master container listens for connections.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#getURL--">getURL</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></code></dd>
 <dt><span class="returnLabel">Returns:</span></dt>
-<dd>the URL of the container.</dd>
+<dd>port on which the container's TCP server runs.</dd>
 </dl>
 </li>
 </ul>
@@ -409,7 +391,6 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <li class="blockList">
 <h4>isDuplicate</h4>
 <pre>protected&nbsp;boolean&nbsp;isDuplicate(<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;aid)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#isDuplicate-org.arl.fjage.AgentID-">Container</a></code></span></div>
 <div class="block">Checks if an agent id already exists in the container.</div>
 <dl>
@@ -429,7 +410,6 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <li class="blockList">
 <h4>send</h4>
 <pre>public&nbsp;boolean&nbsp;send(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#send-org.arl.fjage.Message-">Container</a></code></span></div>
 <div class="block">Sends a message. The message is sent to the recipient specified in the
  message. In case of associated remote containers, the message is only
@@ -452,13 +432,10 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <h4>send</h4>
 <pre>public&nbsp;boolean&nbsp;send(<a href="../../../../org/arl/fjage/Message.html" title="class in org.arl.fjage">Message</a>&nbsp;m,
                     boolean&nbsp;relay)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#send-org.arl.fjage.Message-boolean-">Container</a></code></span></div>
 <div class="block">Sends a message. The message is sent to the recipient specified in the
  message.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#send-org.arl.fjage.Message-boolean-">send</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="../../../../org/arl/fjage/Container.html#send-org.arl.fjage.Message-boolean-">send</a></code>&nbsp;in class&nbsp;<code><a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></code></dd>
 <dt><span class="paramLabel">Parameters:</span></dt>
@@ -469,6 +446,78 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 </dl>
 </li>
 </ul>
+<a name="getAgents--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getAgents</h4>
+<pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]&nbsp;getAgents()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#getAgents--">Container</a></code></span></div>
+<div class="block">Gets all agent ids in the container.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../org/arl/fjage/Container.html#getAgents--">getAgents</a></code>&nbsp;in class&nbsp;<code><a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>an array of agent ids.</dd>
+</dl>
+</li>
+</ul>
+<a name="getServices--">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getServices</h4>
+<pre>public&nbsp;java.lang.String[]&nbsp;getServices()</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#getServices--">Container</a></code></span></div>
+<div class="block">Gets a list of all services that agents in this container provide.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../org/arl/fjage/Container.html#getServices--">getServices</a></code>&nbsp;in class&nbsp;<code><a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></code></dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>an array of service names.</dd>
+</dl>
+</li>
+</ul>
+<a name="agentForService-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>agentForService</h4>
+<pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>&nbsp;agentForService(java.lang.String&nbsp;service)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#agentForService-java.lang.String-">Container</a></code></span></div>
+<div class="block">Finds an agent providing a named service.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../org/arl/fjage/Container.html#agentForService-java.lang.String-">agentForService</a></code>&nbsp;in class&nbsp;<code><a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>service</code> - name of the service.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>agent id for service provider, null if none found.</dd>
+</dl>
+</li>
+</ul>
+<a name="agentsForService-java.lang.String-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>agentsForService</h4>
+<pre>public&nbsp;<a href="../../../../org/arl/fjage/AgentID.html" title="class in org.arl.fjage">AgentID</a>[]&nbsp;agentsForService(java.lang.String&nbsp;service)</pre>
+<div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#agentsForService-java.lang.String-">Container</a></code></span></div>
+<div class="block">Finds all agents providing a named service.</div>
+<dl>
+<dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
+<dd><code><a href="../../../../org/arl/fjage/Container.html#agentsForService-java.lang.String-">agentsForService</a></code>&nbsp;in class&nbsp;<code><a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></code></dd>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>service</code> - name of the service.</dd>
+<dt><span class="returnLabel">Returns:</span></dt>
+<dd>an array of agent ids for service providers, null if none found.</dd>
+</dl>
+</li>
+</ul>
 <a name="shutdown--">
 <!--   -->
 </a>
@@ -476,67 +525,21 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <li class="blockList">
 <h4>shutdown</h4>
 <pre>public&nbsp;void&nbsp;shutdown()</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#shutdown--">Container</a></code></span></div>
 <div class="block">Terminates the container and all agents in it.</div>
 <dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#shutdown--">shutdown</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></code></dd>
 <dt><span class="overrideSpecifyLabel">Overrides:</span></dt>
 <dd><code><a href="../../../../org/arl/fjage/Container.html#shutdown--">shutdown</a></code>&nbsp;in class&nbsp;<code><a href="../../../../org/arl/fjage/Container.html" title="class in org.arl.fjage">Container</a></code></dd>
-</dl>
-</li>
-</ul>
-<a name="attachSlave-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>attachSlave</h4>
-<pre>public&nbsp;boolean&nbsp;attachSlave(java.lang.String&nbsp;url)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#attachSlave-java.lang.String-">RemoteContainer</a></code></span></div>
-<div class="block">Attaches a slave container to the master container. Implemented only by
- master containers.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#attachSlave-java.lang.String-">attachSlave</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>url</code> - URL of the slave container.</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>true on success, false otherwise.</dd>
-</dl>
-</li>
-</ul>
-<a name="detachSlave-java.lang.String-">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>detachSlave</h4>
-<pre>public&nbsp;boolean&nbsp;detachSlave(java.lang.String&nbsp;url)</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
-<div class="block"><span class="descfrmTypeLabel">Description copied from interface:&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#detachSlave-java.lang.String-">RemoteContainer</a></code></span></div>
-<div class="block">Detaches a slave container from the master container. Implemented only by
- master containers.</div>
-<dl>
-<dt><span class="overrideSpecifyLabel">Specified by:</span></dt>
-<dd><code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html#detachSlave-java.lang.String-">detachSlave</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi">RemoteContainer</a></code></dd>
-<dt><span class="paramLabel">Parameters:</span></dt>
-<dd><code>url</code> - URL of the slave container.</dd>
-<dt><span class="returnLabel">Returns:</span></dt>
-<dd>true on success, false otherwise.</dd>
 </dl>
 </li>
 </ul>
 <a name="toString--">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>toString</h4>
 <pre>public&nbsp;java.lang.String&nbsp;toString()</pre>
-<div class="block"><span class="deprecatedLabel">Deprecated.</span>&nbsp;</div>
 <div class="block"><span class="descfrmTypeLabel">Description copied from class:&nbsp;<code><a href="../../../../org/arl/fjage/Container.html#toString--">Container</a></code></span></div>
 <div class="block">Gets a string representation of the container.</div>
 <dl>
@@ -546,6 +549,20 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 <dd>string representation of the container.</dd>
 <dt><span class="seeLabel">See Also:</span></dt>
 <dd><code>Object.toString()</code></dd>
+</dl>
+</li>
+</ul>
+<a name="connectionClosed-org.arl.fjage.remote.ConnectionHandler-">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>connectionClosed</h4>
+<pre>public&nbsp;void&nbsp;connectionClosed(org.arl.fjage.remote.ConnectionHandler&nbsp;handler)</pre>
+<div class="block">Callback for closure of connection to remote container.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>handler</code> - indicates the connection that is closed.</dd>
 </dl>
 </li>
 </ul>
@@ -576,11 +593,11 @@ implements <a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="i
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../org/arl/fjage/rmi/Gateway.html" title="class in org.arl.fjage.rmi"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../org/arl/fjage/rmi/RemoteContainer.html" title="interface in org.arl.fjage.rmi"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../org/arl/fjage/remote/Gateway.html" title="class in org.arl.fjage.remote"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
+<li><a href="../../../../org/arl/fjage/remote/SlaveContainer.html" title="class in org.arl.fjage.remote"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
-<li><a href="../../../../index.html?org/arl/fjage/rmi/MasterContainer.html" target="_top">Frames</a></li>
+<li><a href="../../../../index.html?org/arl/fjage/remote/MasterContainer.html" target="_top">Frames</a></li>
 <li><a href="MasterContainer.html" target="_top">No&nbsp;Frames</a></li>
 </ul>
 <ul class="navList" id="allclasses_navbar_bottom">

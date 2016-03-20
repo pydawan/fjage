@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>The Shell Agent &mdash; fjåge 1.3.4 documentation</title>
+    <title>The Shell Agent &mdash; fjåge 1.4 documentation</title>
     
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.3.4',
+        VERSION:     '1.4',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="fjåge 1.3.4 documentation" href="index.html" />
+    <link rel="top" title="fjåge 1.4 documentation" href="index.html" />
     <link rel="next" title="Simulation" href="simulation.html" />
-    <link rel="prev" title="Distributed Agents" href="rmi.html" /> 
+    <link rel="prev" title="Distributed Agents" href="remote.html" /> 
   </head>
   <body role="document">
     <div class="related" role="navigation" aria-label="related navigation">
@@ -36,9 +36,9 @@
           <a href="simulation.html" title="Simulation"
              accesskey="N">next</a></li>
         <li class="right" >
-          <a href="rmi.html" title="Distributed Agents"
+          <a href="remote.html" title="Distributed Agents"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.3.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -54,7 +54,7 @@
 </ul>
 
   <h4>Previous topic</h4>
-  <p class="topless"><a href="rmi.html"
+  <p class="topless"><a href="remote.html"
                         title="previous chapter">Distributed Agents</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="simulation.html"
@@ -92,7 +92,8 @@
 <div class="highlight-console"><div class="highlight"><pre><span class="go">bash$ ./fjage.sh</span>
 <span class="gp">&gt;</span> <span class="nb">help</span>
 <span class="go">help [topic] - provide help on a specified topic</span>
-<span class="go">ps - list all the agents running on the local container</span>
+<span class="go">ps - list all the agents</span>
+<span class="go">services - lists all services provided by agents</span>
 <span class="go">who - display list of variables in workspace</span>
 <span class="go">run - run a Groovy script</span>
 <span class="go">println - display message on console</span>
@@ -138,7 +139,7 @@
 <span class="go">Connected to localhost</span>
 <span class="go">Escape character is &#39;^]&#39;.</span>
 <span class="gp">&gt;</span> ps
-<span class="go">shell: org.arl.fjage.shell.ShellAgent - IDLE</span>
+<span class="go">shell</span>
 <span class="gp">&gt;</span>
 </pre></div>
 </div>
@@ -185,9 +186,9 @@
           <a href="simulation.html" title="Simulation"
              >next</a></li>
         <li class="right" >
-          <a href="rmi.html" title="Distributed Agents"
+          <a href="remote.html" title="Distributed Agents"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.3.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
