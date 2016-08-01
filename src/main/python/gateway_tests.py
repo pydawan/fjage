@@ -17,9 +17,6 @@ except:
 	print "Cannot connect to server"
 	sys.exit(0)
 
-g1.start_recv() #move this to the constructor
-
-
 # g1.create_msg("id", 1)
 # g1.create_msg("action", "containsAgent")
 # g1.create_msg("agentID", "shell")

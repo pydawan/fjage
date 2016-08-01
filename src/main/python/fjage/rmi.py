@@ -27,24 +27,25 @@ class Gateway:
     # supported json keys
     keys = ["id", "action", "inResponseTo", "agentID", "agentIDs", "service", "services", "answer", "message", "relay"]
 
-    # json message
-    json_msg = dict()
-
-    # queue
-    q = _mp.Queue()
-
-    # create socket
-    s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
-
-    pid = 0
-
     # constructor
     def __init__(self, ip, port):
         # connect to fjage master container
         try:
+            # json message
+            self.json_msg = dict()
+
+            # queue
+            self.q = _mp.Queue()
+
+            # create socket
+            self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
             self.s.connect((ip, port))
-        except:
-            #print "Cannot connect to remote server, exiting program"
+
+            # start the receive process as another process
+            self.recv = _mp.Process(target=self.recv_proc, args=(self.q,))
+            self.recv.start()
+        except Exception, e:
+            print "Exception:" + str(e)
             _sys.exit(0)
             pass
 
@@ -57,6 +58,7 @@ class Gateway:
             try:
                 c = self.s.recv(1)
                 rmsg = rmsg + c
+                # TODO: Count the number of '{' and use that to determine the end of json message
                 if c == '}':
                     #print rmsg
                     #put incoming message to queue
@@ -64,11 +66,6 @@ class Gateway:
                     rmsg = ""
             except:
                 pass
-
-    # start the receive process as another process
-    def start_recv(self):
-        recv = _mp.Process(target=self.recv_proc, args=(self.q,))
-        recv.start()
 
     # destructor
     def __del__(self):
@@ -97,12 +94,13 @@ class Gateway:
 
     def shutdown(self):
         """Shutdown master container & closes the gateway.
-        The gateway functionality may not longer be accessed after this method is called.
+        The gateway functionality shall no longer be accessed after this method is called.
 
         """
         msg = {"action": "shutdown"}
+        #TODO: Do this only if there is something to dump
         self.s.sendall(_json.dumps(msg) + '\n')
-        #TODO: Kill child process
+        self.recv.terminate()
 
     def send(self):
         """Send the json message.
