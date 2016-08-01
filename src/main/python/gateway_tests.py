@@ -9,7 +9,7 @@ for full license details.
 """
 
 import fjage
-import time, sys
+import time, sys, json
 
 try:
 	g1 = fjage.rmi.Gateway('localhost', 5081)
@@ -24,11 +24,24 @@ except:
 # time.sleep(1)
 # print(g1.receive())
 
-g1.create_msg("id", 1)
-g1.create_msg("action", "containsAgent")
-g1.create_msg("agentID", "shell")
-print(g1.request(g1.get_msg(), 1))
+# g1.create_msg("id", 1)
+# g1.create_msg("action", "containsAgent")
+# g1.create_msg("agentID", "shell")
+# print(g1.request(g1.get_msg(), 1))
 
+data = {
+    'action' : 'send',
+    'message' : {
+        'msgID' : 1,
+        'recipient' : '#abc',
+        'sender' : 'rshell',
+        'msgType' : 'org.arl.fjage.Message'
+        },
+    'relay' : 'true'
+}
+
+print json.dumps(data)
+print(g1.request(data, 1))
 
 print(g1.receive_with_tout(5))
 

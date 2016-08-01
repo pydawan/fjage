@@ -52,18 +52,23 @@ class Gateway:
     # receive process
     def recv_proc(self, q):
         self.s.setblocking(0)
+        parenthesis_count = 0;
         rmsg = ""
 
         while 1:
             try:
                 c = self.s.recv(1)
                 rmsg = rmsg + c
-                # TODO: Count the number of '{' and use that to determine the end of json message
+                # count the number of '{' and use that to determine the end of json message
+                if c == '{':
+                    parenthesis_count += 1
                 if c == '}':
-                    #print rmsg
-                    #put incoming message to queue
-                    q.put(rmsg)
-                    rmsg = ""
+                    parenthesis_count -= 1
+                    if parenthesis_count == 0:
+                        # print rmsg
+                        # put incoming message to queue
+                        q.put(rmsg)
+                        rmsg = ""
             except:
                 pass
 
