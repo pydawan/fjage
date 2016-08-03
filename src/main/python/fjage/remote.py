@@ -1,4 +1,4 @@
-"""RMI: RMI interface for remote containers.
+"""Remote: Gateway interface for remote containers.
 
 Copyright (c) 2016, Manu Ignatius
 
@@ -20,7 +20,8 @@ import sys as _sys
 import json as _json
 import socket as _socket
 import multiprocessing as _mp
-from messages import *
+from messages import JsonMessage as _jmsg
+from messages import Message as _msg
 
 class Gateway:
     """Gateway to communicate with agents from python."""
@@ -78,8 +79,6 @@ class Gateway:
             print "Exception: " + str(e)
             pass
 
-##################
-
     def shutdown(self):
         """Shutdown master container & closes the gateway.
         The gateway functionality shall no longer be accessed after this method is called.
@@ -96,31 +95,44 @@ class Gateway:
 
         """
 
-        print _json.dumps(JsonMessage().to_jdict(msg))
-        self.s.sendall(_json.dumps(JsonMessage().to_jdict(msg)) + '\n')
+        # create message dict from Message class
+        mdict = msg.to_dict()
+
+        # create json message dict by passing message dict
+        json_to_send = _jmsg().to_jdict(mdict)
+
+        print _json.dumps(json_to_send)
+
+        # send the message
+        self.s.sendall(_json.dumps(json_to_send) + '\n')
 
     # # TODO: Implement this
     # def receive_with_filter_tout (self, filter, tout):
     #     pass
 
     def receive(self):
-        """Return received response message, null if none available."""
-        if self.q.empty():
-            return "null"
-        else:
-            #return self.q.get()
-            return JsonMessage().to_mdict(self.q.get())
-
+        """Return received response message, None if none available."""
+        return self.receive_with_tout(1)
     
     def receive_with_tout(self, tout):
-        """Return received response message, null if none available."""
+        """Return received response message, None if none available."""
         try:
             rmsg = self.q.get(timeout=tout)
         except:
-            print "Queue timeout"
-            return
-        #return rmsg
-        return JsonMessage().to_mdict(rmsg)
+            print "Queue empty/timeout"
+            return None
+
+        print rmsg
+
+        mdict = _jmsg().to_mdict(rmsg)
+
+        #TODO: Validate the logic of class loading and do this based on 'msgType' field
+        rv = _msg()
+
+        # load the class with message fields
+        rv.to_class(mdict)
+
+        return rv
 
     # # TODO: Implement this
     # def receive_with_class(self, class):
@@ -140,14 +152,11 @@ class Gateway:
 
     # return received response message, null if none available.
     def request(self, msg, tout):
-        print _json.dumps(JsonMessage().to_jdict(msg))
-        self.s.sendall(_json.dumps(JsonMessage().to_jdict(msg)) + '\n')
-        try:
-            rmsg = self.q.get(timeout=tout)
-        except:
-            print "Queue timeout"
-            return
-        return rmsg
+        # send the message
+        self.send(msg)
+
+        # wait for the response
+        return self.receive_with_tout(tout)
 
     # # TODO: Implement this
     # def topic_string(self, topic):

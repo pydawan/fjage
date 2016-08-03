@@ -10,6 +10,7 @@ TODO:
     * Implement the classes
 
 """
+from messages import Message
 
-class ShellExecReq:
+class ShellExecReq(Message):
     """Request to execute shell command/script."""
