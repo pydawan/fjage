@@ -20,13 +20,18 @@ import sys as _sys
 import json as _json
 import socket as _socket
 import multiprocessing as _mp
-from messages import JsonMessage as _jmsg
+from messages import Action as _action
 from messages import Message as _msg
+from messages import GenericMessage as _gmsg
 
 class Gateway:
     """Gateway to communicate with agents from python."""
 
+    # Supported JSON keys
+    json_msg_keys = ["id", "action", "inResponseTo", "agentID", "agentIDs", "service", "services", "answer", "message", "relay"]
+
     def __init__(self, ip, port):
+
         try:
             # queue
             self.q = _mp.Queue()
@@ -84,8 +89,10 @@ class Gateway:
         The gateway functionality shall no longer be accessed after this method is called.
 
         """
-        msg = {"action": "shutdown"}
-        self.s.sendall(_json.dumps(msg) + '\n')
+
+        j_dict = dict()
+        j_dict["action"] = _action().SHUTDOWN
+        self.s.sendall(_json.dumps(j_dict) + '\n')
         self.recv.terminate()
 
     def send(self, msg):
@@ -95,16 +102,38 @@ class Gateway:
 
         """
 
-        # create message dict from Message class
-        mdict = msg.to_dict()
+        #TODO: Verify the logic (compare to send in SlaveContainer.java)
+        if not msg.recipient:
+            return False
 
-        # create json message dict by passing message dict
-        json_to_send = _jmsg().to_jdict(mdict)
+        # create json message dict
+        j_dict = dict()
+        m_dict = dict()
 
-        print _json.dumps(json_to_send)
+        j_dict["action"] = _action().SEND
+        j_dict["relay"] = True
+
+        m_dict = msg.to_json()
+
+        class_name = msg.__class__.__name__
+
+        # check for GenericMessage class and add "map"
+        g = _gmsg()
+        if class_name == g.__class__.__name__:
+            j_dict["map"] = g.gmap
+
+        # add msgType field to json
+        # TODO: Get module name programatically : __name__ (- the file name)
+        m_dict["msgType"] = "org.arl."+"fjage"+"."+class_name
+        j_dict["message"] = m_dict
+
+        # print _json.dumps(json_to_send)
+        print _json.dumps(j_dict)
 
         # send the message
-        self.s.sendall(_json.dumps(json_to_send) + '\n')
+        self.s.sendall(_json.dumps(j_dict) + '\n')
+
+        return True
 
     # # TODO: Implement this
     # def receive_with_filter_tout (self, filter, tout):
@@ -124,13 +153,21 @@ class Gateway:
 
         print rmsg
 
-        mdict = _jmsg().to_mdict(rmsg)
+        try:
+            m_dict = dict()
+            m_dict = _json.loads(rmsg)["message"]
+        except Exception, e:
+            print "Exception: Key not found - " + str(e)
+            # TODO: Check valid return values instead of returning False
+            return False
 
-        #TODO: Validate the logic of class loading and do this based on 'msgType' field
+        #TODO: Implement class loading and do this based on 'msgType' field
         rv = _msg()
 
+        #TODO: Investigate why printing json.loads prints a 'u' before each field
+
         # load the class with message fields
-        rv.to_class(mdict)
+        rv.from_json(m_dict)
 
         return rv
 
@@ -193,3 +230,9 @@ class Gateway:
     # # TODO: Implement this
     # def agentsForService_enum(self, service):
     #   pass
+
+########### Private stuff
+    def is_topic(self, msg):
+        if msg.recipient[0] == "#":
+            return True
+        return False
