@@ -41,27 +41,27 @@ except Exception, e:
 
 ############ Gateway Test - Message
 
-# msg to send
-m1 = fjage.messages.Message()
+# # msg to send
+# m1 = fjage.messages.Message()
 
-m1.recipient = '#abc'
-m1.sender = 'rshell'
+# m1.recipient = '#abc'
+# m1.sender = 'rshell'
 
-# received message
-m2 = fjage.messages.Message()
+# # received message
+# m2 = fjage.messages.Message()
 
-m2 = g1.request(m1, 1)
-# if g1.send(m1):
-#     m2 = g1.receive()
+# m2 = g1.request(m1, 1)
+# # if g1.send(m1):
+# #     m2 = g1.receive()
 
-if m2:
-    print m2.msgID
-    print m2.recipient
-    print m2.sender
-    print m2.perf
-    print m2.inReplyTo
+# if m2:
+#     print m2.msgID
+#     print m2.recipient
+#     print m2.sender
+#     print m2.perf
+#     print m2.inReplyTo
 
-g1.shutdown()
+# g1.shutdown()
 
 ############ Gateway Test - Generic Message
 
@@ -92,6 +92,33 @@ g1.shutdown()
 #     print m2.inReplyTo
 
 # g1.shutdown()
+
+############ Gateway Test - Generic Message
+
+# msg to send
+m1 = fjage.shell.ShellExecReq()
+
+m1.recipient = 'shell'
+m1.sender = 'rshell'
+m1.perf = "REQUEST"
+m1.script = {"path":"samples/01_hello.groovy"}
+m1.args = []
+
+# received message
+m2 = fjage.shell.ShellExecReq()
+# m2 = g1.request(m1, 1)
+
+if g1.send(m1):
+    m2 = g1.receive()
+
+if m2:
+    print m2.msgID
+    print m2.recipient
+    print m2.sender
+    print m2.perf
+    print m2.inReplyTo
+
+g1.shutdown()
 
 ############# GenericMessage Tests
 

@@ -27,8 +27,7 @@ from messages import GenericMessage as _gmsg
 class Gateway:
     """Gateway to communicate with agents from python."""
 
-    # Supported JSON keys
-    json_msg_keys = ["id", "action", "inResponseTo", "agentID", "agentIDs", "service", "services", "answer", "message", "relay"]
+    # Supported JSON keys : ["id", "action", "inResponseTo", "agentID", "agentIDs", "service", "services", "answer", "message", "relay"]
 
     def __init__(self, ip, port):
 
@@ -69,7 +68,6 @@ class Gateway:
                 if c == '}':
                     parenthesis_count -= 1
                     if parenthesis_count == 0:
-                        # print rmsg
                         # put incoming message to queue
                         q.put(rmsg)
                         rmsg = ""
@@ -113,22 +111,19 @@ class Gateway:
         j_dict["action"] = _action().SEND
         j_dict["relay"] = True
 
-        m_dict = msg.to_json()
-
-        class_name = msg.__class__.__name__
-
-        # check for GenericMessage class and add "map"
-        g = _gmsg()
-        if class_name == g.__class__.__name__:
-            j_dict["map"] = g.gmap
+        # convert object attributes to dict and add to json message
+        m_dict = self.to_json(msg)
+        j_dict["message"] = m_dict
 
         # add msgType field to json
         # TODO: Get module name programatically : __name__ (- the file name)
-        m_dict["msgType"] = "org.arl."+"fjage"+"."+class_name
-        j_dict["message"] = m_dict
+        m_dict["msgType"] = "org.arl."+msg.__module__+"."+msg.__class__.__name__
 
-        # print _json.dumps(json_to_send)
-        print _json.dumps(j_dict)
+        # check for GenericMessage class and add "map" separately
+        if msg.__class__.__name__ == _gmsg().__class__.__name__:
+            j_dict["map"] = msg.map
+
+        print "Sending: " + _json.dumps(j_dict) + "\n"
 
         # send the message
         self.s.sendall(_json.dumps(j_dict) + '\n')
@@ -142,7 +137,7 @@ class Gateway:
     def receive(self):
         """Return received response message, None if none available."""
         return self.receive_with_tout(1)
-    
+
     def receive_with_tout(self, tout):
         """Return received response message, None if none available."""
         try:
@@ -151,23 +146,31 @@ class Gateway:
             print "Queue empty/timeout"
             return None
 
-        print rmsg
+        print "Received message: " + rmsg + "\n"
 
+#### Test code for GenericMessage map. TODO: Remove
+        # print "Modified message: "
+        # k = _json.loads(rmsg)
+        # k["map"] = {"map11":"MapValue11","map21":"MapValue21","map31":"MapValue31"}
+        # k["message"]["msgType"] = "org.arl.fjage.GenericMessage"
+        # rmsg = _json.dumps(k)
+        # print rmsg , "\n"
+#####
         try:
-            m_dict = dict()
-            m_dict = _json.loads(rmsg)["message"]
+            #TODO: Verify whether we need to decode and encode to get Message json string?
+            rmsg1 = _json.dumps(_json.loads(rmsg)["message"])
+            rv = _json.loads(rmsg1, object_hook = self.from_json)
+
+            # print rv.__module__ + "." + rv.__class__.__name__
+
+            # add map to Generic message
+            if rv.__class__.__name__ == _gmsg().__class__.__name__:
+                map = _json.loads(rmsg)["map"]
+                rv.putAll(map);
+
         except Exception, e:
             print "Exception: Key not found - " + str(e)
-            # TODO: Check valid return values instead of returning False
-            return False
-
-        #TODO: Implement class loading and do this based on 'msgType' field
-        rv = _msg()
-
-        #TODO: Investigate why printing json.loads prints a 'u' before each field
-
-        # load the class with message fields
-        rv.from_json(m_dict)
+            return None # TODO: Verify whether the return value is correct
 
         return rv
 
@@ -236,3 +239,53 @@ class Gateway:
         if msg.recipient[0] == "#":
             return True
         return False
+
+    def to_json(self, inst):
+        """Convert the object attributes to a dict."""
+        # copying object's attributes from __dict__ to convert to json
+        dt = inst.__dict__.copy()
+
+        # removing the attributes which are 'None'
+        for key in list(dt):
+            if dt[key] == None:
+                dt.pop(key)
+            # remove map if its a GenericMessage from the Message
+            if key == 'map':
+                dt.pop(key)
+
+        return dt
+        
+        # if 'msgType' in dt:
+
+        #     #TODO: Do this programmatically
+        #     class_name = 'Message'
+        #     module_name = 'fjage.messages'
+        #     module = __import__(module_name)
+        #     # print 'MODULE: ' + str(module)
+        #     class_ = getattr(module, class_name)
+        #     # print 'CLASS :' + str(class_)
+        #     args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
+        #     # print 'INSTANCE ARGS:', args
+        #     inst = class_(**args)
+        # else:
+        #     inst = dt
+        # return inst
+
+    def from_json(self, dt):
+        """If possible, do class loading, else return the dict."""
+        # print dt
+        if 'msgType' in dt:
+
+            #TODO: Do this programmatically
+            class_name = 'Message'
+            module_name = 'fjage.messages'
+            module = __import__(module_name)
+            # print 'MODULE: ' + str(module)
+            class_ = getattr(module, class_name)
+            # print 'CLASS :' + str(class_)
+            args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
+            # print 'INSTANCE ARGS:', args
+            inst = class_(**args)
+        else:
+            inst = dt
+        return inst

@@ -24,6 +24,22 @@ class Action:
         self.SEND = "send"
         self.SHUTDOWN = "shutdown"
 
+# TODO: Verify whether to implement Performative as an enum (like in java)
+class Performative:
+    def __init__(self):
+        self.REQUEST = "request"                        # Request an action to be performed.
+        self.AGREE = "agree"                            # Agree to performing the requested action.
+        self.REFUSE = "refuse"                          # Refuse to perform the requested action.
+        self.FAILURE = "failure"                        # Notification of failure to perform a requested or agreed action.
+        self.INFORM = "inform"                          # Notification of an event.
+        self.CONFIRM = "confirm"                        # Confirm that the answer to a query is true.
+        self.DISCONFIRM = "disconfirm"                  # Confirm that the answer to a query is false.
+        self.QUERY_IF = "query_if"                      # Query if some statement is true or false.
+        self.NOT_UNDERSTOOD= "not_understood"           # Notification that a message was not understood.
+        self.CFP = "cfp"                                # Call for proposal.
+        self.PROPOSE = "prpopose"                       # Response for CFP.
+        self.CANCEL = "cancel"                          # Cancel pending request.
+
 class Message:
     """Base class for messages transmitted by one agent to another.
 
@@ -33,91 +49,54 @@ class Message:
     of a message must be serializable.
     """
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+
         self.msgID = str(_uuid.uuid4())
         self.perf = None
         self.recipient = None   #TODO: Current assumption: if recipient is topic, the string will start with a '#'. Verify this
         self.sender = None
         self.inReplyTo = None
 
-        self.m_dict = dict()
-
-    def to_json(self):
-        """Converts Message object to a message dictionary to be converted to json later."""
-
-        if self.perf:
-            self.m_dict["perf"] = self.perf
-
-        if self.recipient:
-            self.m_dict["recipient"] = self.recipient
-
-        if self.sender:
-            self.m_dict["sender"] = self.sender
-
-        self.m_dict["msgID"] = self.msgID
-
-        if self.inReplyTo:
-            self.m_dict["inReplyTo"] = self.inReplyTo
-
-        return self.m_dict
-
-    def from_json(self, m_dict):
-        """Converts message dictionary to Message object from json."""
-
-        is_msgID = False
-
-        for key in m_dict:
-
-            if key == "perf":
-                self.perf = m_dict["perf"]
-
-            if key == "recipient":
-                self.recipient = m_dict["recipient"]
-
-            if key == "sender":
-                self.sender = m_dict["sender"]
-
-            if key == "msgID":
-                self.msgID = m_dict["msgID"]
-                is_msgID = True
-
-            if key == "inReplyTo":
-                self.inReplyTo = m_dict["inReplyTo"]
-
-        if is_msgID != True:
-            raise Exception("Missing msgID")
+        # TODO: Verify whether the kwargs is used in a correct way.
+        self.__dict__.update(kwargs)
 
 class GenericMessage(Message):
     """A message class that can convey generic messages represented by key-value pairs."""
 
-    gmap = dict();
+    def __init__(self, **kwargs):
+        #TODO: Verify whether this is the way to call parent's constructor
+        Message.__init__(self)
+        self.map = dict()
+
+        # TODO: Verify whether the kwargs is used in a correct way.
+        self.__dict__.update(kwargs)
 
     def clear(self):
-        """ Clears the dict."""
-        self.gmap.clear()
+        """Clears the map (dict)."""
+        self.map.clear()
 
     def containsKey(self, key):
         """Returns true if this map (dict) contains a mapping for the specified key."""
-        return self.gmap.has_key(key)
+        return self.map.has_key(key)
 
     def containsValue(self, value):
         """Returns true if this map (dict) contains a mapping for the specified value."""
-        return value in self.gmap.values()
+        return value in self.map.values()
 
     def entrySet(self):
         """Returns a Set view of the mappings contained in this map (dict)."""
         s = set()
-        for v in self.gmap.values():
+        for v in self.map.values():
             s.add(v)
         return s
 
     def isEmpty(self):
         """Returns true if this map (dict) contains no key-value mappings."""
-        return not self.gmap
+        return not self.map
 
     def keySet(self):
         s = set()
-        for v in self.gmap:
+        for v in self.map:
             s.add(v)
         return s
 
@@ -143,7 +122,7 @@ class GenericMessage(Message):
         if key == "inReplyTo":
             return self.inReplyTo
 
-        self.gmap[key] = value
+        self.map[key] = value
         return value
 
     def get(self, key):
@@ -166,38 +145,38 @@ class GenericMessage(Message):
         if key == "inReplyTo":
             return self.inReplyTo
 
-        if key in self.gmap:
-            return self.gmap[key]
+        if key in self.map:
+            return self.map[key]
         else:
             return None
 
     def putAll(self, in_map):
         """Copies all of the mappings from the specified map to this map (dict)."""
-        if type(in_map) != type(self.gmap):
+        if type(in_map) != type(self.map):
             return
 
-        # TODO: Verify whether we need to clear gmap before the copying operation
+        # TODO: Verify whether we need to clear map before the copying operation
         self.clear()
-        self.gmap = in_map.copy()
+        self.map = in_map.copy()
 
     def remove(self, key):
         """Removes the mapping for the specified key from this map (dict) if present."""
-        return self.gmap.pop(key, None)
+        return self.map.pop(key, None)
 
     def size(self):
         """Returns the number of key-value mappings in this map (dict)."""
-        return len(self.gmap)
+        return len(self.map)
 
     def values(self):
         """Returns a list of all the values contained in this map (dict)."""
-        return self.gmap.values()
+        return self.map.values()
 
-################# Special getters
+################# Special getters for GenericMessage
 
     def get_as_string(self, key, defVal):
         """Gets the string value associated with the key, or defVal if not found."""
-        if key in self.gmap:
-            return str(self.gmap[key])
+        if key in self.map:
+            return str(self.map[key])
         else:
             return defVal
 
@@ -206,8 +185,8 @@ class GenericMessage(Message):
         Raises ValueError, if the value is not numeric.
         """
 
-        if key in self.gmap:
-            return int(self.gmap[key])
+        if key in self.map:
+            return int(self.map[key])
         else:
             return defVal
 
@@ -216,8 +195,8 @@ class GenericMessage(Message):
         Raises ValueError, if the value is not numeric.
         """
 
-        if key in self.gmap:
-            return long(self.gmap[key])
+        if key in self.map:
+            return long(self.map[key])
         else:
             return defVal
 
@@ -228,7 +207,7 @@ class GenericMessage(Message):
         NOTE: Python's built-in float type has double precision (it's a C double in CPython, a Java double in Jython).
         """
 
-        if key in self.gmap:
-            return float(self.gmap[key])
+        if key in self.map:
+            return float(self.map[key])
         else:
             return defVal
