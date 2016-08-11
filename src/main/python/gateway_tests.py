@@ -1,5 +1,4 @@
-# -*- coding: UTF-8 -*-
-"""Gateway Tests: Test file for Gateway.
+"""Gateway Tests: Test file for Gateway class.
 
 Copyright (c) 2016, Manu Ignatius
 
@@ -50,9 +49,23 @@ except Exception, e:
 # # received message
 # m2 = fjage.messages.Message()
 
-# m2 = g1.request(m1, 1)
-# # if g1.send(m1):
-# #     m2 = g1.receive()
+# # m2 = g1.request(m1, 1)
+# if g1.send(m1):
+#     m2 = g1.receive()
+
+# if m2:
+#     print m2.msgID
+#     print m2.recipient
+#     print m2.sender
+#     print m2.perf
+#     print m2.inReplyTo
+
+# m1.recipient = '#def'
+# m1.sender = 'rshell'
+
+# # m2 = g1.request(m1, 1)
+# if g1.send(m1):
+#     m2 = g1.receive()
 
 # if m2:
 #     print m2.msgID
@@ -68,7 +81,7 @@ except Exception, e:
 # # msg to send
 # m1 = fjage.messages.GenericMessage()
 
-# m1.recipient = '#abc'
+# m1.recipient = '#mno'
 # m1.sender = 'rshell'
 
 # # map
@@ -93,32 +106,34 @@ except Exception, e:
 
 # g1.shutdown()
 
-############ Gateway Test - Generic Message
+############ ShellExecReq Message Tests
 
 # msg to send
-m1 = fjage.shell.ShellExecReq()
+m3 = fjage.shell.ShellExecReq()
 
-m1.recipient = 'shell'
-m1.sender = 'rshell'
-m1.perf = "REQUEST"
-m1.script = {"path":"samples/01_hello.groovy"}
-m1.args = []
+m3.recipient = 'shell'
+m3.sender = 'rshell'
+m3.script = {"path":"samples/01_hello.groovy"}
+m3.args = []
 
 # received message
-m2 = fjage.shell.ShellExecReq()
-# m2 = g1.request(m1, 1)
+m4 = fjage.shell.ShellExecReq()
+# m4 = g1.request(m3, 1)
 
-if g1.send(m1):
-    m2 = g1.receive()
+if g1.send(m3):
+    m4 = g1.receive()
 
-if m2:
-    print m2.msgID
-    print m2.recipient
-    print m2.sender
-    print m2.perf
-    print m2.inReplyTo
+time.sleep(5)
 
-g1.shutdown()
+m3.recipient = 'shell'
+m3.sender = 'rshell'
+# NOTE: Make sure either cmd or script has a value
+m3.script = None
+m3.args = None
+m3.cmd = 'services'
+
+# received message
+m4 = g1.request(m3, 1)
 
 ############# GenericMessage Tests
 

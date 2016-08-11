@@ -1,4 +1,4 @@
-"""Remote: Gateway interface for remote containers.
+"""Remote: Support for gateway interface for remote containers using JSON over TCP/IP.
 
 Copyright (c) 2016, Manu Ignatius
 
@@ -16,6 +16,7 @@ TODO:
     * agents_for_service
 
 """
+import os as _os
 import sys as _sys
 import json as _json
 import socket as _socket
@@ -25,9 +26,22 @@ from messages import Message as _msg
 from messages import GenericMessage as _gmsg
 
 class Gateway:
-    """Gateway to communicate with agents from python."""
+    """Gateway to communicate with agents from python.
 
-    # Supported JSON keys : ["id", "action", "inResponseTo", "agentID", "agentIDs", "service", "services", "answer", "message", "relay"]
+    NOTE: Create only one object of Gateway class at a time. Else, there will be multiple receive threads
+
+    Supported JSON keys:
+        id
+        action
+        inResponseTo
+        agentID
+        agentIDs
+        service
+        services
+        answer
+        message
+        relay
+    """
 
     def __init__(self, ip, port):
 
@@ -48,7 +62,43 @@ class Gateway:
         except Exception, e:
             print "Exception: " + str(e)
             _sys.exit(0)
-            pass
+
+    def parse_incoming(self, rmsg, q):
+        """Parse incoming messages"""
+
+        #TODO: Complete this method for other actions
+        r_dict = _json.loads(rmsg)
+
+        for key, value in r_dict.items():
+            if key == 'action':
+                if value == _action().AGENTS:
+                    print "ACTION: " + _action().AGENTS
+
+                elif value == _action().CONTAINS_AGENT:
+                    print "ACTION: " + _action().CONTAINS_AGENT
+
+                elif value == _action().SERVICES:
+                    print "ACTION: " + _action().SERVICES
+
+                elif value == _action().AGENT_FOR_SERVICE:
+                    print "ACTION: " + _action().AGENT_FOR_SERVICE
+
+                elif value == _action().AGENTS_FOR_SERVICE:
+                    print "ACTION: " + _action().AGENTS_FOR_SERVICE
+
+                elif value == _action().SEND:
+                    # add message to queue
+                    print "ACTION: " + _action().SEND
+                    q.put(r_dict["message"])
+
+                elif value == _action().SHUTDOWN:
+                    print "ACTION: " + _action().SHUTDOWN
+                    return None
+
+                else:
+                    print "Invalid message, discarding"
+
+        return True
 
     def __recv_proc(self, q):
         """Receive process."""
@@ -57,7 +107,8 @@ class Gateway:
         parenthesis_count = 0;
         rmsg = ""
 
-        while 1:
+        #TODO: Avoid polling to reduce CPU load?
+        while True:
             try:
                 c = self.s.recv(1)
                 rmsg = rmsg + c
@@ -68,30 +119,52 @@ class Gateway:
                 if c == '}':
                     parenthesis_count -= 1
                     if parenthesis_count == 0:
-                        # put incoming message to queue
-                        q.put(rmsg)
+                        print "Received: " + rmsg
+
+                        # parse incoming messages
+                        msg = self.parse_incoming(rmsg, q)
+
+                        # # TODO: Verify shutdown design
+                        if msg == None:
+                            print "Shutting down receive process"
+                            break
+
+                        # q.put(rmsg)
                         rmsg = ""
             except:
                 pass
 
+        #TODO: Do we need a _sys.exit(0) here?
+
     def __del__(self):
         try:
             self.s.close
-            self.recv.terminate()
+            #TODO: Do we need this here?
+            # self.recv.terminate()
         except Exception, e:
             print "Exception: " + str(e)
-            pass
 
     def shutdown(self):
-        """Shutdown master container & closes the gateway.
+        """Shutdown master container.
         The gateway functionality shall no longer be accessed after this method is called.
+
+        How shutdown works:
+        When an applications calls shutdown method, it sends a shutdown json message
+        to the master container. The master container responds with a shutdown message.
+        While processing an incoming shutdown message, the receive process (child) breaks
+        from its while loop and the program exits.
 
         """
 
         j_dict = dict()
         j_dict["action"] = _action().SHUTDOWN
         self.s.sendall(_json.dumps(j_dict) + '\n')
-        self.recv.terminate()
+
+        # now wait for the child to quit the receive while loop
+        #TODO: Verify whether the parent process need to wait for the child to join or 
+        # simply break the child's while loop?
+        # self.recv.join()
+        # self.recv.terminate()
 
     def send(self, msg):
         """Send the json message.
@@ -143,23 +216,16 @@ class Gateway:
         try:
             rmsg = self.q.get(timeout=tout)
         except:
-            print "Queue empty/timeout"
+            print "Error: Queue empty/timeout"
             return None
 
-        print "Received message: " + rmsg + "\n"
+        # print "Received message: " + str(rmsg) + "\n"
 
-#### Test code for GenericMessage map. TODO: Remove
-        # print "Modified message: "
-        # k = _json.loads(rmsg)
-        # k["map"] = {"map11":"MapValue11","map21":"MapValue21","map31":"MapValue31"}
-        # k["message"]["msgType"] = "org.arl.fjage.GenericMessage"
-        # rmsg = _json.dumps(k)
-        # print rmsg , "\n"
-#####
         try:
             #TODO: Verify whether we need to decode and encode to get Message json string?
-            rmsg1 = _json.dumps(_json.loads(rmsg)["message"])
-            rv = _json.loads(rmsg1, object_hook = self.from_json)
+            # rmsg1 = _json.dumps(_json.loads(rmsg)["message"])
+            # rv = _json.loads(rmsg1, object_hook = self.from_json)
+            rv = self.from_json(rmsg)
 
             # print rv.__module__ + "." + rv.__class__.__name__
 
@@ -169,7 +235,7 @@ class Gateway:
                 rv.putAll(map);
 
         except Exception, e:
-            print "Exception: Key not found - " + str(e)
+            print "Exception: Class loading failed - " + str(e)
             return None # TODO: Verify whether the return value is correct
 
         return rv
@@ -245,32 +311,15 @@ class Gateway:
         # copying object's attributes from __dict__ to convert to json
         dt = inst.__dict__.copy()
 
-        # removing the attributes which are 'None'
+        # removing empty attributes
         for key in list(dt):
             if dt[key] == None:
                 dt.pop(key)
-            # remove map if its a GenericMessage from the Message
+            # remove map if its a GenericMessage class (to be added later)
             if key == 'map':
                 dt.pop(key)
-
         return dt
         
-        # if 'msgType' in dt:
-
-        #     #TODO: Do this programmatically
-        #     class_name = 'Message'
-        #     module_name = 'fjage.messages'
-        #     module = __import__(module_name)
-        #     # print 'MODULE: ' + str(module)
-        #     class_ = getattr(module, class_name)
-        #     # print 'CLASS :' + str(class_)
-        #     args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
-        #     # print 'INSTANCE ARGS:', args
-        #     inst = class_(**args)
-        # else:
-        #     inst = dt
-        # return inst
-
     def from_json(self, dt):
         """If possible, do class loading, else return the dict."""
         # print dt

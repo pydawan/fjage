@@ -35,7 +35,7 @@ class Performative:
         self.CONFIRM = "confirm"                        # Confirm that the answer to a query is true.
         self.DISCONFIRM = "disconfirm"                  # Confirm that the answer to a query is false.
         self.QUERY_IF = "query_if"                      # Query if some statement is true or false.
-        self.NOT_UNDERSTOOD= "not_understood"           # Notification that a message was not understood.
+        self.NOT_UNDERSTOOD = "not_understood"          # Notification that a message was not understood.
         self.CFP = "cfp"                                # Call for proposal.
         self.PROPOSE = "prpopose"                       # Response for CFP.
         self.CANCEL = "cancel"                          # Cancel pending request.
@@ -47,6 +47,15 @@ class Message:
     extended by application-specific message classes. To ensure that messages
     can be sent between agents running on remote containers, all attributes
     of a message must be serializable.
+
+    Attributes:
+        msgID
+        perf
+        recipient
+        sender
+        inReplyTo
+
+    NOTE: Message will not be send across without a recipient
     """
 
     def __init__(self, **kwargs):
@@ -61,7 +70,15 @@ class Message:
         self.__dict__.update(kwargs)
 
 class GenericMessage(Message):
-    """A message class that can convey generic messages represented by key-value pairs."""
+    """A message class that can convey generic messages represented by key-value pairs.
+
+    NOTE: Since GenericMessage class is a special case, we have implemented getters and setters
+    similar to that in java implementation of fjage. So, use them and do not operate directly
+    on the attributes for GenericMessage. It may be removed in future though.
+
+    Attributes:
+        map: Is a dictionary
+    """
 
     def __init__(self, **kwargs):
         #TODO: Verify whether this is the way to call parent's constructor
