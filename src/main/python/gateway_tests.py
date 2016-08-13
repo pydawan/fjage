@@ -118,22 +118,27 @@ m3.args = []
 
 # received message
 m4 = fjage.shell.ShellExecReq()
-# m4 = g1.request(m3, 1)
 
-if g1.send(m3):
-    m4 = g1.receive()
+# m4 = g1.request(m3, 1)
+g1.send(m3)
+    # m4 = g1.receive_with_message(m3)
 
 time.sleep(5)
 
-m3.recipient = 'shell'
-m3.sender = 'rshell'
+m5 = fjage.shell.ShellExecReq()
+m5.recipient = 'shell'
+m5.sender = 'rshell'
 # NOTE: Make sure either cmd or script has a value
-m3.script = None
-m3.args = None
-m3.cmd = 'services'
+m5.script = None
+m5.args = None
+m5.cmd = 'services'
+m5.msgID = str(uuid.uuid4())
 
+m6 = fjage.shell.ShellExecReq()
 # received message
-m4 = g1.request(m3, 1)
+m6 = g1.request(m5, 1)
+
+m4 = g1.receive_with_message(m3)
 
 ############# GenericMessage Tests
 

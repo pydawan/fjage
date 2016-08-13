@@ -7,18 +7,18 @@ See file LICENSE.txt or go to http://www.opensource.org/licenses/BSD-3-Clause
 for full license details.
 
 TODO:
-    * Implement the following methods
-    * rest of receive
-    * topic
-    * subscribe
-    * unsubscribe
-    * agent_for_service
-    * agents_for_service
+    * Implement the following methods:
+        * topic
+        * subscribe
+        * unsubscribe
+        * agent_for_service
+        * agents_for_service
 
 """
 import os as _os
 import sys as _sys
 import json as _json
+import time as _time
 import socket as _socket
 import multiprocessing as _mp
 from messages import Action as _action
@@ -41,13 +41,21 @@ class Gateway:
         answer
         message
         relay
+
+    Changes from Java implementation
+        1. In Java implementation, when a message is received, it is automatically class loaded since
+        fjage has  knowledge of the UnetStack extended classes. In python, we do this with kwargs. But
+        this may not be extensible for external apps which uses custom messages. So, if classloading
+        fails in python, we simply return a "Message" dictionary.
+        2. Since Python handles message dict rather than objects, MessageFilter Class<?> does not make
+        sense and the methods receive_with_class_tout() and receive_with_class() is not implemented.
     """
 
     def __init__(self, ip, port):
 
         try:
-            # queue
-            self.q = _mp.Queue()
+            # NOTE: q is implemented using a list since we need to iterate over items. Following java implementation.
+            self.q = _mp.Manager().list()
 
             # create socket
             self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
@@ -89,7 +97,10 @@ class Gateway:
                 elif value == _action().SEND:
                     # add message to queue
                     print "ACTION: " + _action().SEND
-                    q.put(r_dict["message"])
+                    try:
+                        q.append(r_dict["message"])
+                    except Exception, e:
+                        print "Exception: Error adding to queue - " + str(e)
 
                 elif value == _action().SHUTDOWN:
                     print "ACTION: " + _action().SHUTDOWN
@@ -119,17 +130,16 @@ class Gateway:
                 if c == '}':
                     parenthesis_count -= 1
                     if parenthesis_count == 0:
-                        print "Received: " + rmsg
+                        # print "Received: " + rmsg
 
                         # parse incoming messages
                         msg = self.parse_incoming(rmsg, q)
 
                         # # TODO: Verify shutdown design
                         if msg == None:
-                            print "Shutting down receive process"
+                            print "Shutting down"
                             break
 
-                        # q.put(rmsg)
                         rmsg = ""
             except:
                 pass
@@ -196,43 +206,65 @@ class Gateway:
         if msg.__class__.__name__ == _gmsg().__class__.__name__:
             j_dict["map"] = msg.map
 
-        print "Sending: " + _json.dumps(j_dict) + "\n"
+        # print "Sending: " + _json.dumps(j_dict) + "\n"
 
         # send the message
         self.s.sendall(_json.dumps(j_dict) + '\n')
 
         return True
 
-    # # TODO: Implement this
-    # def receive_with_filter_tout (self, filter, tout):
-    #     pass
-
-    def receive(self):
-        """Return received response message, None if none available."""
-        return self.receive_with_tout(1)
-
-    def receive_with_tout(self, tout):
-        """Return received response message, None if none available."""
+    # TODO: In general, timeout is not implemented for any of the following functions
+    def receive_with_filter_tout (self, filter, tout):
+        """Returns a message received by the gateway and matching the given filter."""
         try:
-            rmsg = self.q.get(timeout=tout)
-        except:
-            print "Error: Queue empty/timeout"
+            # rmsg = self.q.get(timeout=tout)
+            #TODO: Implement wait with timeout using signals. NOTE: If we use signals, this will be a UNIX only implementation.
+            if tout:
+                _time.sleep(tout)
+            else:
+                _time.sleep(0.1)
+
+            # if no filter, simply pop an element from the head
+            if filter == None:
+                rmsg = self.q.pop()
+
+            # match the msgID to incoming message's inReplyTo field
+            else:
+                # parse list and look for matching msgID
+                if filter.msgID:
+
+                    # print "msgID: " + str(filter.msgID)
+                    for i in self.q:
+                        if filter.msgID == i["inReplyTo"]:
+                            try:
+                                rmsg = self.q.pop(self.q.index(i))
+                            except Exception, e:
+                                print "Error: Getting item from list - " +  str(e)
+                else:
+                    return None
+                
+        except Exception, e:
+            print "Error: Queue empty/timeout - " +  str(e)
             return None
 
         # print "Received message: " + str(rmsg) + "\n"
 
         try:
-            #TODO: Verify whether we need to decode and encode to get Message json string?
-            # rmsg1 = _json.dumps(_json.loads(rmsg)["message"])
-            # rv = _json.loads(rmsg1, object_hook = self.from_json)
+            # decode rmsg to object
             rv = self.from_json(rmsg)
 
-            # print rv.__module__ + "." + rv.__class__.__name__
+            found_map = False
 
-            # add map to Generic message
+            # add map if it is a Generic message
             if rv.__class__.__name__ == _gmsg().__class__.__name__:
-                map = _json.loads(rmsg)["map"]
-                rv.putAll(map);
+                for key in rmsg:
+                    if key == "map":
+                        map = _json.loads(rmsg)["map"]
+                        rv.putAll(map);
+                        found_map = True
+
+                if not found_map:
+                    print "No map field found in Generic Message"
 
         except Exception, e:
             print "Exception: Class loading failed - " + str(e)
@@ -240,21 +272,30 @@ class Gateway:
 
         return rv
 
-    # # TODO: Implement this
-    # def receive_with_class(self, class):
-    #     pass
+    def receive(self):
+        """Return received response message, None if none available."""
+        return self.receive_with_filter_tout(None, 0.1)
 
-    # # TODO: Implement this
-    # def receive_with_class_tout(self, class, tout):
-    #     pass
+    def receive_with_tout(self, tout):
+        """Return received response message, None if none available."""
+        return self.receive_with_filter_tout (None, tout)
 
-    # # TODO: Implement this
-    # def receive_with_message(self, message):
-    #     pass
+    #TODO: Verify whether we need to implement methods which take in Class<?> as filter
+    # def receive_with_class(self, kls):
+    #     """Returns a message of a given class received by the gateway. This method is non-blocking."""
+    #     return self.receive_with_filter_tout (kls, 0.1)
 
-    # # TODO: Implement this
-    # def receive_with_message_tout(self, message, tout):
-    #     pass
+    # def receive_with_class_tout(self, kls, tout):
+    #     """Returns a message of a given class received by the gateway. This method blocks until timeout if no message available."""
+    #     return self.receive_with_filter_tout (kls, tout)
+
+    def receive_with_message(self, msg):
+        """Returns a response message received by the gateway. This method is non-blocking."""
+        return self.receive_with_filter_tout(msg, 0.1)
+
+    def receive_with_message_tout(self, msg, tout):
+        """Returns a response message received by the gateway. This method blocks until timeout."""
+        return self.receive_with_filter_tout(msg, tout)
 
     # return received response message, null if none available.
     def request(self, msg, tout):
@@ -262,7 +303,7 @@ class Gateway:
         self.send(msg)
 
         # wait for the response
-        return self.receive_with_tout(tout)
+        return self.receive_with_filter_tout(msg, tout)
 
     # # TODO: Implement this
     # def topic_string(self, topic):
@@ -320,17 +361,35 @@ class Gateway:
                 dt.pop(key)
         return dt
         
+
+    #TODO: Figure out why class loading for ShellExecReq doesn't work
     def from_json(self, dt):
         """If possible, do class loading, else return the dict."""
         # print dt
         if 'msgType' in dt:
 
             #TODO: Do this programmatically
-            class_name = 'Message'
-            module_name = 'fjage.messages'
-            module = __import__(module_name)
+            # parse class name
+            class_name = dt['msgType'].split(".")[-1]
+
+            # parse module name
+            module_name = dt['msgType'].split(".")  # split the full name
+            module_name.remove(module_name[-1])     # remove class name
+            #TODO: remove org and arl in future
+            module_name.remove('org')               # remove org
+            module_name.remove('arl')               # remove arl
+            module_name = ".".join(module_name)     # join whats left
+
+            try:
+                module = __import__(module_name)
+            except Exception, e:
+                print "Exception in from_json, module: " + str(e)
+                return
             # print 'MODULE: ' + str(module)
-            class_ = getattr(module, class_name)
+            try:
+                class_ = getattr(module, class_name)
+            except Exception, e:
+                print "Exception in from_json, class: " + str(e)
             # print 'CLASS :' + str(class_)
             args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
             # print 'INSTANCE ARGS:', args
