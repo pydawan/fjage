@@ -123,7 +123,7 @@ m4 = fjage.shell.ShellExecReq()
 g1.send(m3)
     # m4 = g1.receive_with_message(m3)
 
-time.sleep(5)
+time.sleep(2)
 
 m5 = fjage.shell.ShellExecReq()
 m5.recipient = 'shell'
@@ -139,6 +139,12 @@ m6 = fjage.shell.ShellExecReq()
 m6 = g1.request(m5, 1)
 
 m4 = g1.receive_with_message(m3)
+if m4:
+    print m4.msgID
+    print m4.recipient
+    print m4.sender
+    print m4.perf
+    print m4.inReplyTo
 
 ############# GenericMessage Tests
 

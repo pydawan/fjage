@@ -22,7 +22,6 @@ import time as _time
 import socket as _socket
 import multiprocessing as _mp
 from messages import Action as _action
-from messages import Message as _msg
 from messages import GenericMessage as _gmsg
 
 class Gateway:
@@ -361,16 +360,19 @@ class Gateway:
                 dt.pop(key)
         return dt
         
-
-    #TODO: Figure out why class loading for ShellExecReq doesn't work
     def from_json(self, dt):
         """If possible, do class loading, else return the dict."""
         # print dt
         if 'msgType' in dt:
 
+            # for testing various incoming message types
+            # dt['msgType'] = 'org.arl.fjage.shell.ShellExecReq'
+            # print dt['msgType']
+
             #TODO: Do this programmatically
             # parse class name
             class_name = dt['msgType'].split(".")[-1]
+            # print class_name
 
             # parse module name
             module_name = dt['msgType'].split(".")  # split the full name
@@ -379,6 +381,7 @@ class Gateway:
             module_name.remove('org')               # remove org
             module_name.remove('arl')               # remove arl
             module_name = ".".join(module_name)     # join whats left
+            # print module_name
 
             try:
                 module = __import__(module_name)
