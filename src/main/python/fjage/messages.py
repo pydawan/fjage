@@ -62,7 +62,7 @@ class Message:
 
         self.msgID = str(_uuid.uuid4())
         self.perf = None
-        self.recipient = None   #TODO: Current assumption: if recipient is topic, the string will start with a '#'. Verify this
+        self.recipient = None
         self.sender = None
         self.inReplyTo = None
 
@@ -120,7 +120,6 @@ class GenericMessage(Message):
     def put(self, key, value):
         """Associates the specified value with the specified key in this map (dict)."""
 
-        # TODO: Why "perf" in Message and "performative" here. What will happen if its "perf"?
         if key == "performative":
             self.perf = value
             return value
@@ -132,7 +131,6 @@ class GenericMessage(Message):
         if key == "sender":
             return self.sender
 
-        # TODO: Why "msgID" in Message and "messageID" here. What will happen if its "msgID"?
         if key == "messageID":
             return self.msgID
 
@@ -145,7 +143,6 @@ class GenericMessage(Message):
     def get(self, key):
         """Returns the value to which the specified key is mapped, or None if this map (dict) contains no mapping for the key."""
 
-        # TODO: Why "perf" in Message and "performative" here. What will happen if its "perf"?
         if key == "performative":
             return self.perf
 
@@ -155,7 +152,6 @@ class GenericMessage(Message):
         if key == "sender":
             return self.sender
 
-        # TODO: Why "msgID" in Message and "messageID" here. What will happen if its "msgID"?
         if key == "messageID":
             return self.msgID
 

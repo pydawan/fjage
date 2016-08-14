@@ -18,16 +18,25 @@ TODO:
 import os as _os
 import sys as _sys
 import json as _json
+import uuid as _uuid
 import time as _time
 import socket as _socket
 import multiprocessing as _mp
 from messages import Action as _action
 from messages import GenericMessage as _gmsg
 
+class AgentID:
+    """An identifier for an agent or a topic."""
+
+    def __init__(self, name, is_topic = False):
+            self.name = name
+            if is_topic:
+                self.is_topic = True
+            else:
+                self.is_topic = False
+
 class Gateway:
     """Gateway to communicate with agents from python.
-
-    NOTE: Create only one object of Gateway class at a time. Else, there will be multiple receive threads
 
     Supported JSON keys:
         id
@@ -50,11 +59,22 @@ class Gateway:
         sense and the methods receive_with_class_tout() and receive_with_class() is not implemented.
     """
 
-    def __init__(self, ip, port):
+    def __init__(self, ip, port, name = None):
+        """NOTE: If name is assigned during __init__, the developer must make sure it is not a duplicate."""
 
         try:
+            if name == None:
+                self.name = "PythonGW-"+str(_uuid.uuid4())
+            else:
+                try:
+                    self.name = name
+                except Exception, e:
+                    print "Exception: Cannot assign name to gateway: " + str(e)
+                    _sys.exit(0)
+
             # NOTE: q is implemented using a list since we need to iterate over items. Following java implementation.
             self.q = _mp.Manager().list()
+            self.subscribers = _mp.Manager().list()
 
             # create socket
             self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
@@ -63,7 +83,7 @@ class Gateway:
             self.s.connect((ip, port))
 
             # start the receive process as another process
-            self.recv = _mp.Process(target=self.__recv_proc, args=(self.q,))
+            self.recv = _mp.Process(target=self.__recv_proc, args=(self.q, self.subscribers, ))
             self.recv.start()
 
         except Exception, e:
@@ -71,32 +91,88 @@ class Gateway:
             _sys.exit(0)
 
     def parse_incoming(self, rmsg, q):
-        """Parse incoming messages"""
+        """Parse incoming messages and respond to them"""
 
-        #TODO: Complete this method for other actions
+        #TODO: Verify the logic of all responses
         r_dict = _json.loads(rmsg)
 
         for key, value in r_dict.items():
             if key == 'action':
+
                 if value == _action().AGENTS:
                     print "ACTION: " + _action().AGENTS
+                    # respond with self.name
+                    rsp = dict()
+                    rsp["inResponseTo"] = r_dict["action"]
+                    rsp["id"] = r_dict["id"]
+                    #TODO: Confirm this field is a list
+                    l = list()
+                    l.append(self.name)
+                    rsp["agentIDs"] = l
+
+                    # send the message
+                    self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == _action().CONTAINS_AGENT:
                     print "ACTION: " + _action().CONTAINS_AGENT
 
+                    rsp = dict()
+                    rsp["inResponseTo"] = r_dict["action"]
+                    rsp["id"] = r_dict["id"]
+
+                    # check against gateway's agentID/name
+                    answer = False
+                    if r_dict["agentID"]:
+                        if r_dict["agentID"] == self.name:
+                            answer = True
+                    rsp["answer"] = answer
+
+                    # send the message
+                    self.s.sendall(_json.dumps(rsp) + '\n')
+
                 elif value == _action().SERVICES:
                     print "ACTION: " + _action().SERVICES
+
+                    rsp = dict()
+                    rsp["inResponseTo"] = r_dict["action"]
+                    rsp["id"] = r_dict["id"]
+                    # no services offered by gateway
+                    rsp["services"] = []
+
+                    # send the message
+                    self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == _action().AGENT_FOR_SERVICE:
                     print "ACTION: " + _action().AGENT_FOR_SERVICE
 
+                    rsp = dict()
+                    rsp["inResponseTo"] = r_dict["action"]
+                    rsp["id"] = r_dict["id"]
+                    # no gateway agent will offer a service
+                    rsp["agentID"] = []
+
+                    # send the message
+                    self.s.sendall(_json.dumps(rsp) + '\n')
+
                 elif value == _action().AGENTS_FOR_SERVICE:
                     print "ACTION: " + _action().AGENTS_FOR_SERVICE
 
+                    rsp = dict()
+                    rsp["inResponseTo"] = r_dict["action"]
+                    rsp["id"] = r_dict["id"]
+                    # no gateway agent will offer a service
+                    rsp["agentIDs"] = []
+
+                    # send the message
+                    self.s.sendall(_json.dumps(rsp) + '\n')
+
                 elif value == _action().SEND:
-                    # add message to queue
+                    #TODO: add message to queue only if:
+                        # 1. if the aid is same as gateway's id/name or
+                        # 2. the message is for a topic in the subscribers list
                     print "ACTION: " + _action().SEND
                     try:
+                        #TODO: There is a broken pipe error when the server tries to send a message. Investigate
                         q.append(r_dict["message"])
                     except Exception, e:
                         print "Exception: Error adding to queue - " + str(e)
@@ -110,11 +186,11 @@ class Gateway:
 
         return True
 
-    def __recv_proc(self, q):
+    def __recv_proc(self, q, subscribers):
         """Receive process."""
 
         self.s.setblocking(0)
-        parenthesis_count = 0;
+        parenthesis_count = 0
         rmsg = ""
 
         #TODO: Avoid polling to reduce CPU load?
@@ -213,7 +289,7 @@ class Gateway:
         return True
 
     # TODO: In general, timeout is not implemented for any of the following functions
-    def receive_with_filter_tout (self, filter, tout):
+    def receive_with_filter_tout (self, filter, tout, filter_type):
         """Returns a message received by the gateway and matching the given filter."""
         try:
             # rmsg = self.q.get(timeout=tout)
@@ -227,8 +303,9 @@ class Gateway:
             if filter == None:
                 rmsg = self.q.pop()
 
+            #TODO: Verify whether usage of filter_type OK or should we use isinstanceof()
             # match the msgID to incoming message's inReplyTo field
-            else:
+            elif filter_type == "msg":
                 # parse list and look for matching msgID
                 if filter.msgID:
 
@@ -239,8 +316,22 @@ class Gateway:
                                 rmsg = self.q.pop(self.q.index(i))
                             except Exception, e:
                                 print "Error: Getting item from list - " +  str(e)
-                else:
-                    return None
+
+            # match the msgType to incoming message's msgType field
+            elif filter_type == "cls":
+                # parse list and look for matching msgType
+                print "msgType: " + str(filter)
+                for i in self.q:
+                    #TODO: Use proper class name, not hardcoded class name
+                    # if i["msgType"] == str(filter):
+                    if i["msgType"] == "org.arl.fjage.Message":
+                        try:
+                            rmsg = self.q.pop(self.q.index(i))
+                        except Exception, e:
+                            print "Error: Getting item from list - " +  str(e)
+
+            else:
+                return None
                 
         except Exception, e:
             print "Error: Queue empty/timeout - " +  str(e)
@@ -259,7 +350,7 @@ class Gateway:
                 for key in rmsg:
                     if key == "map":
                         map = _json.loads(rmsg)["map"]
-                        rv.putAll(map);
+                        rv.putAll(map)
                         found_map = True
 
                 if not found_map:
@@ -273,79 +364,158 @@ class Gateway:
 
     def receive(self):
         """Return received response message, None if none available."""
-        return self.receive_with_filter_tout(None, 0.1)
+        return self.receive_with_filter_tout(None, 0.1, None)
 
     def receive_with_tout(self, tout):
         """Return received response message, None if none available."""
-        return self.receive_with_filter_tout (None, tout)
+        return self.receive_with_filter_tout (None, tout, None)
 
-    #TODO: Verify whether we need to implement methods which take in Class<?> as filter
-    # def receive_with_class(self, kls):
-    #     """Returns a message of a given class received by the gateway. This method is non-blocking."""
-    #     return self.receive_with_filter_tout (kls, 0.1)
+    def receive_with_class(self, kls):
+        """Returns a message of a given class received by the gateway. This method is non-blocking."""
+        return self.receive_with_filter_tout (kls, 0.1, "cls")
 
-    # def receive_with_class_tout(self, kls, tout):
-    #     """Returns a message of a given class received by the gateway. This method blocks until timeout if no message available."""
-    #     return self.receive_with_filter_tout (kls, tout)
+    def receive_with_class_tout(self, kls, tout):
+        """Returns a message of a given class received by the gateway. This method blocks until timeout if no message available."""
+        return self.receive_with_filter_tout (kls, tout, "cls")
 
     def receive_with_message(self, msg):
         """Returns a response message received by the gateway. This method is non-blocking."""
-        return self.receive_with_filter_tout(msg, 0.1)
+        return self.receive_with_filter_tout(msg, 0.1, "msg")
 
     def receive_with_message_tout(self, msg, tout):
         """Returns a response message received by the gateway. This method blocks until timeout."""
-        return self.receive_with_filter_tout(msg, tout)
+        return self.receive_with_filter_tout(msg, tout, "msg")
 
-    # return received response message, null if none available.
     def request(self, msg, tout):
-        # send the message
+        """Return received response message, null if none available."""
         self.send(msg)
+        return self.receive_with_filter_tout(msg, tout, "msg")
 
-        # wait for the response
-        return self.receive_with_filter_tout(msg, tout)
+    def topic_string(self, topic):
+        """Returns an object representing the named topic."""
+        if isinstance(topic, str):
+            return AgentID(topic, True)
+        return None
 
-    # # TODO: Implement this
-    # def topic_string(self, topic):
-    #   pass
-
-    # # TODO: Implement this
+    #TODO: Verify enums in python: If we use a custom package, how will it affect other systems?
     # def topic_enum(self, topic):
-    #   pass
+    #     """Returns an object representing the named topic."""
+    #     if isinstance(topic, Enum):
+    #         return AgentID(topic.__class__.__name__+"."+topic.name, True)
+    #     return None
 
-    # # TODO: Implement this
-    # def topic_agentID(self, topic):
-    #   pass
+    def topic_agentID(self, topic):
+        if isinstance(topic, AgentID):
+            if topic.is_topic:
+                return topic
+        return AgentID(topic.name+"__ntf", True)
 
-    # # TODO: Implement this
-    # def subscribe(self, topic):
-    #   pass
+    def subscribe(self, topic):
+        """Subscribes the gateway to receive all messages sent to the given topic."""
+        if isinstance(topic, AgentID):
+            if topic.is_topic == False:
+                new_topic = AgentID(topic.name+"__ntf", True)
+            else:
+                new_topic = topic
 
-    # # TODO: Implement this
-    # def unsubscribe(self, topic):
-    #   pass
+            if len(self.subscribers) == 0:
+                self.subscribers.append(new_topic.name)
+            else:
+                # check whether this topic is already subscribed to
+                for tp in self.subscribers:
+                    if new_topic.name == tp:
+                        print "Error: Already subscribed to topic"
+                        return
+                self.subscribers.append(new_topic.name)
 
-    # # TODO: Implement this
-    # def agentForService_string(self, service):
-    #   pass
+    def unsubscribe(self, topic):
+        """Unsubscribes the gateway from a given topic."""
+        if isinstance(topic, AgentID):
+            if topic.is_topic == False:
+                new_topic = AgentID(topic.name+"__ntf", True)
 
-    # # TODO: Implement this
+            if len(self.subscribers) == 0:
+                return False
+
+            try:
+                self.subscribers.remove(new_topic.name)
+            except:
+                print "Exception: No such topic subscribed: " + new_topic.name
+
+            return True
+
+
+    def agentForService_string(self, service):
+        """ Finds an agent that provides a named service. If multiple agents are registered
+            to provide a given service, any of the agents' id may be returned.
+        """
+
+        if isinstance(service, str):
+
+            # create json message dict
+            j_dict = dict()
+            j_dict["action"] = _action().AGENT_FOR_SERVICE
+            j_dict["service"] = service
+            j_dict["id"] = str(_uuid.uuid4())
+
+            # send the message
+            self.s.sendall(_json.dumps(j_dict) + '\n')
+
+        #TODO: Get the response from queue and return it
+
+    #TODO: Verify enums in python
     # def agentForService_enum(self, service):
-    #   pass
+    #     """ Finds an agent that provides a named service. If multiple agents are registered
+    #         to provide a given service, any of the agents' id may be returned.
+    #     """
 
-    # # TODO: Implement this
-    # def agentsForService_string(self, service):
-    #   pass
+    #     if isinstance(service, Enum):
 
-    # # TODO: Implement this
+    #         # create json message dict
+    #         j_dict = dict()
+    #         j_dict["action"] = _action().AGENT_FOR_SERVICE
+    #         j_dict["service"] = service.__class__.__name__+"."+str(service)
+    #         j_dict["id"] = str(_uuid.uuid4())
+
+    #         # send the message
+    #         self.s.sendall(_json.dumps(j_dict) + '\n')
+
+    #     #TODO: Get the response from queue and return it
+
+    def agentsForService_string(self, service):
+        """Finds all agents that provides a named service."""
+
+        if isinstance(service, str):
+
+            # create json message dict
+            j_dict = dict()
+            j_dict["action"] = _action().AGENTS_FOR_SERVICE
+            j_dict["service"] = service
+            j_dict["id"] = str(_uuid.uuid4())
+
+            # send the message
+            self.s.sendall(_json.dumps(j_dict) + '\n')
+
+        #TODO: Get the response from queue and return it
+
+    #TODO: Verify enums in python
     # def agentsForService_enum(self, service):
-    #   pass
+    #     """Finds all agents that provides a named service."""
+
+    #     if isinstance(service, Enum):
+
+    #         # create json message dict
+    #         j_dict = dict()
+    #         j_dict["action"] = _action().AGENTS_FOR_SERVICE
+    #         j_dict["service"] = service.__class__.__name__+"."+str(service)
+    #         j_dict["id"] = str(_uuid.uuid4())
+
+    #         # send the message
+    #         self.s.sendall(_json.dumps(j_dict) + '\n')
+
+    #     #TODO: Get the response from queue and return it
 
 ########### Private stuff
-    def is_topic(self, msg):
-        if msg.recipient[0] == "#":
-            return True
-        return False
-
     def to_json(self, inst):
         """Convert the object attributes to a dict."""
         # copying object's attributes from __dict__ to convert to json
@@ -387,12 +557,13 @@ class Gateway:
                 module = __import__(module_name)
             except Exception, e:
                 print "Exception in from_json, module: " + str(e)
-                return
+                return dt
             # print 'MODULE: ' + str(module)
             try:
                 class_ = getattr(module, class_name)
             except Exception, e:
                 print "Exception in from_json, class: " + str(e)
+                return dt
             # print 'CLASS :' + str(class_)
             args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
             # print 'INSTANCE ARGS:', args
