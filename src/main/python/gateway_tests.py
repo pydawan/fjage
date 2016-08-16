@@ -107,20 +107,20 @@ except Exception, e:
 
 ############ ShellExecReq Message Tests
 
-# msg to send
-m3 = fjage.shell.ShellExecReq()
+# # msg to send
+# m3 = fjage.shell.ShellExecReq()
 
-m3.recipient = 'shell'
-m3.sender = 'rshell'
-m3.script = {"path":"samples/01_hello.groovy"}
-m3.args = []
+# m3.recipient = 'shell'
+# m3.sender = 'rshell'
+# m3.script = {"path":"samples/01_hello.groovy"}
+# m3.args = []
 
-# received message
-m4 = fjage.shell.ShellExecReq()
+# # received message
+# m4 = fjage.shell.ShellExecReq()
 
-# m4 = g1.request(m3, 1)
-if g1.send(m3):
-    m4 = g1.receive_with_message(m3)
+# # m4 = g1.request(m3, 1)
+# if g1.send(m3):
+#     m4 = g1.receive_with_message(m3)
 
 # time.sleep(2)
 
@@ -154,24 +154,23 @@ if g1.send(m3):
 #     print m6.inReplyTo
 
 ############# AgentID Tests
-# a1 = g1.topic_string("manu")
+# a1 = g1.topic("manu")
 # print a1.name
 # print a1.is_topic
 
-# # a2 = g1.topic_enum(Color.red)
-# # print a2.name
-# # print a2.is_topic
+# a2 = g1.topic(1)
+# print a2.name
+# print a2.is_topic
 
 # a3 = fjage.remote.AgentID("Daisy")
-# a4 = g1.topic_agentID(a3)
+# a4 = g1.topic(a3)
 # print a4.name
 # print a4.is_topic
 
 # a5 = fjage.remote.AgentID("Elle", True)
-# a6 = g1.topic_agentID(a5)
+# a6 = g1.topic(a5)
 # print a6.name
 # print a6.is_topic
-
 
 ############## subscribe/unsubscribe test
 

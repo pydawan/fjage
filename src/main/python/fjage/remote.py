@@ -22,7 +22,7 @@ import uuid as _uuid
 import time as _time
 import socket as _socket
 import multiprocessing as _mp
-from messages import Action as _action
+from messages import Action
 from messages import GenericMessage as _gmsg
 
 class AgentID:
@@ -55,8 +55,6 @@ class Gateway:
         fjage has  knowledge of the UnetStack extended classes. In python, we do this with kwargs. But
         this may not be extensible for external apps which uses custom messages. So, if classloading
         fails in python, we simply return a "Message" dictionary.
-        2. Since Python handles message dict rather than objects, MessageFilter Class<?> does not make
-        sense and the methods receive_with_class_tout() and receive_with_class() is not implemented.
     """
 
     def __init__(self, ip, port, name = None):
@@ -99,13 +97,12 @@ class Gateway:
         for key, value in r_dict.items():
             if key == 'action':
 
-                if value == _action().AGENTS:
-                    print "ACTION: " + _action().AGENTS
+                if value == Action.AGENTS:
+                    print "ACTION: " + Action.AGENTS
                     # respond with self.name
                     rsp = dict()
                     rsp["inResponseTo"] = r_dict["action"]
                     rsp["id"] = r_dict["id"]
-                    #TODO: Confirm this field is a list
                     l = list()
                     l.append(self.name)
                     rsp["agentIDs"] = l
@@ -113,8 +110,8 @@ class Gateway:
                     # send the message
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
-                elif value == _action().CONTAINS_AGENT:
-                    print "ACTION: " + _action().CONTAINS_AGENT
+                elif value == Action.CONTAINS_AGENT:
+                    print "ACTION: " + Action.CONTAINS_AGENT
 
                     rsp = dict()
                     rsp["inResponseTo"] = r_dict["action"]
@@ -130,8 +127,8 @@ class Gateway:
                     # send the message
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
-                elif value == _action().SERVICES:
-                    print "ACTION: " + _action().SERVICES
+                elif value == Action.SERVICES:
+                    print "ACTION: " + Action.SERVICES
 
                     rsp = dict()
                     rsp["inResponseTo"] = r_dict["action"]
@@ -142,20 +139,20 @@ class Gateway:
                     # send the message
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
-                elif value == _action().AGENT_FOR_SERVICE:
-                    print "ACTION: " + _action().AGENT_FOR_SERVICE
+                elif value == Action.AGENT_FOR_SERVICE:
+                    print "ACTION: " + Action.AGENT_FOR_SERVICE
 
                     rsp = dict()
                     rsp["inResponseTo"] = r_dict["action"]
                     rsp["id"] = r_dict["id"]
                     # no gateway agent will offer a service
-                    rsp["agentID"] = []
+                    rsp["agentID"] = ""
 
                     # send the message
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
-                elif value == _action().AGENTS_FOR_SERVICE:
-                    print "ACTION: " + _action().AGENTS_FOR_SERVICE
+                elif value == Action.AGENTS_FOR_SERVICE:
+                    print "ACTION: " + Action.AGENTS_FOR_SERVICE
 
                     rsp = dict()
                     rsp["inResponseTo"] = r_dict["action"]
@@ -166,19 +163,19 @@ class Gateway:
                     # send the message
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
-                elif value == _action().SEND:
+                elif value == Action.SEND:
                     #TODO: add message to queue only if:
                         # 1. if the aid is same as gateway's id/name or
                         # 2. the message is for a topic in the subscribers list
-                    print "ACTION: " + _action().SEND
+                    print "ACTION: " + Action.SEND
                     try:
                         #TODO: There is a broken pipe error when the server tries to send a message. Investigate
                         q.append(r_dict["message"])
                     except Exception, e:
                         print "Exception: Error adding to queue - " + str(e)
 
-                elif value == _action().SHUTDOWN:
-                    print "ACTION: " + _action().SHUTDOWN
+                elif value == Action.SHUTDOWN:
+                    print "ACTION: " + Action.SHUTDOWN
                     return None
 
                 else:
@@ -242,7 +239,7 @@ class Gateway:
         """
 
         j_dict = dict()
-        j_dict["action"] = _action().SHUTDOWN
+        j_dict["action"] = Action.SHUTDOWN
         self.s.sendall(_json.dumps(j_dict) + '\n')
 
         # now wait for the child to quit the receive while loop
@@ -266,7 +263,7 @@ class Gateway:
         j_dict = dict()
         m_dict = dict()
 
-        j_dict["action"] = _action().SEND
+        j_dict["action"] = Action.SEND
         j_dict["relay"] = True
 
         # convert object attributes to dict and add to json message
@@ -302,6 +299,8 @@ class Gateway:
             # if no filter, simply pop an element from the head
             if filter == None:
                 rmsg = self.q.pop()
+                if rmsg == None:
+                    return None
 
             #TODO: Verify whether usage of filter_type OK or should we use isinstanceof()
             # match the msgID to incoming message's inReplyTo field
@@ -314,6 +313,8 @@ class Gateway:
                         if filter.msgID == i["inReplyTo"]:
                             try:
                                 rmsg = self.q.pop(self.q.index(i))
+                                if rmsg == None:
+                                    return None
                             except Exception, e:
                                 print "Error: Getting item from list - " +  str(e)
 
@@ -327,6 +328,8 @@ class Gateway:
                     if i["msgType"] == "org.arl.fjage.Message":
                         try:
                             rmsg = self.q.pop(self.q.index(i))
+                            if rmsg == None:
+                                return None
                         except Exception, e:
                             print "Error: Getting item from list - " +  str(e)
 
@@ -391,24 +394,18 @@ class Gateway:
         self.send(msg)
         return self.receive_with_filter_tout(msg, tout, "msg")
 
-    def topic_string(self, topic):
+    def topic(self, topic):
         """Returns an object representing the named topic."""
         if isinstance(topic, str):
             return AgentID(topic, True)
-        return None
-
-    #TODO: Verify enums in python: If we use a custom package, how will it affect other systems?
-    # def topic_enum(self, topic):
-    #     """Returns an object representing the named topic."""
-    #     if isinstance(topic, Enum):
-    #         return AgentID(topic.__class__.__name__+"."+topic.name, True)
-    #     return None
-
-    def topic_agentID(self, topic):
-        if isinstance(topic, AgentID):
+            
+        elif isinstance(topic, AgentID):
             if topic.is_topic:
                 return topic
-        return AgentID(topic.name+"__ntf", True)
+            return AgentID(topic.name+"__ntf", True)
+
+        else:
+            return AgentID(topic.__class__.__name__+"."+str(topic), True)
 
     def subscribe(self, topic):
         """Subscribes the gateway to receive all messages sent to the given topic."""
@@ -454,7 +451,7 @@ class Gateway:
 
             # create json message dict
             j_dict = dict()
-            j_dict["action"] = _action().AGENT_FOR_SERVICE
+            j_dict["action"] = Action.AGENT_FOR_SERVICE
             j_dict["service"] = service
             j_dict["id"] = str(_uuid.uuid4())
 
@@ -473,7 +470,7 @@ class Gateway:
 
     #         # create json message dict
     #         j_dict = dict()
-    #         j_dict["action"] = _action().AGENT_FOR_SERVICE
+    #         j_dict["action"] = Action.AGENT_FOR_SERVICE
     #         j_dict["service"] = service.__class__.__name__+"."+str(service)
     #         j_dict["id"] = str(_uuid.uuid4())
 
@@ -489,7 +486,7 @@ class Gateway:
 
             # create json message dict
             j_dict = dict()
-            j_dict["action"] = _action().AGENTS_FOR_SERVICE
+            j_dict["action"] = Action.AGENTS_FOR_SERVICE
             j_dict["service"] = service
             j_dict["id"] = str(_uuid.uuid4())
 
@@ -506,7 +503,7 @@ class Gateway:
 
     #         # create json message dict
     #         j_dict = dict()
-    #         j_dict["action"] = _action().AGENTS_FOR_SERVICE
+    #         j_dict["action"] = Action.AGENTS_FOR_SERVICE
     #         j_dict["service"] = service.__class__.__name__+"."+str(service)
     #         j_dict["id"] = str(_uuid.uuid4())
 

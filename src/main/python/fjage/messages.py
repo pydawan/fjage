@@ -15,30 +15,28 @@ import json as _json
 import uuid as _uuid
 
 class Action:
-    def __init__(self):
-        self.AGENTS = "agents"
-        self.CONTAINS_AGENT = "containsAgent"
-        self.SERVICES = "services"
-        self.AGENT_FOR_SERVICE = "agentForService"
-        self.AGENTS_FOR_SERVICE = "agentsForService"
-        self.SEND = "send"
-        self.SHUTDOWN = "shutdown"
+    AGENTS = "agents"
+    CONTAINS_AGENT = "containsAgent"
+    SERVICES = "services"
+    AGENT_FOR_SERVICE = "agentForService"
+    AGENTS_FOR_SERVICE = "agentsForService"
+    SEND = "send"
+    SHUTDOWN = "shutdown"
 
 # TODO: Verify whether to implement Performative as an enum (like in java)
 class Performative:
-    def __init__(self):
-        self.REQUEST = "request"                        # Request an action to be performed.
-        self.AGREE = "agree"                            # Agree to performing the requested action.
-        self.REFUSE = "refuse"                          # Refuse to perform the requested action.
-        self.FAILURE = "failure"                        # Notification of failure to perform a requested or agreed action.
-        self.INFORM = "inform"                          # Notification of an event.
-        self.CONFIRM = "confirm"                        # Confirm that the answer to a query is true.
-        self.DISCONFIRM = "disconfirm"                  # Confirm that the answer to a query is false.
-        self.QUERY_IF = "query_if"                      # Query if some statement is true or false.
-        self.NOT_UNDERSTOOD = "not_understood"          # Notification that a message was not understood.
-        self.CFP = "cfp"                                # Call for proposal.
-        self.PROPOSE = "prpopose"                       # Response for CFP.
-        self.CANCEL = "cancel"                          # Cancel pending request.
+    REQUEST = "request"                        # Request an action to be performed.
+    AGREE = "agree"                            # Agree to performing the requested action.
+    REFUSE = "refuse"                          # Refuse to perform the requested action.
+    FAILURE = "failure"                        # Notification of failure to perform a requested or agreed action.
+    INFORM = "inform"                          # Notification of an event.
+    CONFIRM = "confirm"                        # Confirm that the answer to a query is true.
+    DISCONFIRM = "disconfirm"                  # Confirm that the answer to a query is false.
+    QUERY_IF = "query_if"                      # Query if some statement is true or false.
+    NOT_UNDERSTOOD = "not_understood"          # Notification that a message was not understood.
+    CFP = "cfp"                                # Call for proposal.
+    PROPOSE = "prpopose"                       # Response for CFP.
+    CANCEL = "cancel"                          # Cancel pending request.
 
 class Message:
     """Base class for messages transmitted by one agent to another.

@@ -7,10 +7,10 @@ See file LICENSE.txt or go to http://www.opensource.org/licenses/BSD-3-Clause
 for full license details.
 
 """
-from messages import Message as _msg
-from messages import Performative as _perf
+from messages import Message
+from messages import Performative
 
-class ShellExecReq(_msg):
+class ShellExecReq(Message):
     """Request to execute shell command/script.
 
     Attributes:
@@ -35,7 +35,7 @@ class ShellExecReq(_msg):
     def __init__(self, **kwargs):
 
         _msg.__init__(self)
-        self.perf = _perf().REQUEST
+        self.perf = Performative.REQUEST
         self.cmd = None
         self.script = None
         self.args = None
