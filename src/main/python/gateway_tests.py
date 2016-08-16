@@ -39,41 +39,39 @@ except Exception, e:
 
 ############ Gateway Test - Message
 
-# # msg to send
-# m1 = fjage.messages.Message()
+# msg to send
+m1 = fjage.messages.Message()
 
-# m1.recipient = '#abc'
-# m1.sender = 'rshell'
+m1.recipient = '#abc'
+m1.sender = 'rshell'
 
-# # received message
-# m2 = fjage.messages.Message()
+# received message
+m2 = fjage.messages.Message()
 
-# # m2 = g1.request(m1, 1)
-# if g1.send(m1):
-#     m2 = g1.receive()
+# m2 = g1.request(m1, 1)
+if g1.send(m1):
+    m2 = g1.receive()
 
-# if m2:
-#     print m2.msgID
-#     print m2.recipient
-#     print m2.sender
-#     print m2.perf
-#     print m2.inReplyTo
+if m2:
+    print m2.msgID
+    print m2.recipient
+    print m2.sender
+    print m2.perf
+    print m2.inReplyTo
 
-# m1.recipient = '#def'
-# m1.sender = 'rshell'
+m1.recipient = '#def'
+m1.sender = 'rshell'
 
-# # m2 = g1.request(m1, 1)
-# if g1.send(m1):
-#     m2 = g1.receive()
+# m2 = g1.request(m1, 1)
+if g1.send(m1):
+    m2 = g1.receive()
 
-# if m2:
-#     print m2.msgID
-#     print m2.recipient
-#     print m2.sender
-#     print m2.perf
-#     print m2.inReplyTo
-
-# g1.shutdown()
+if m2:
+    print m2.msgID
+    print m2.recipient
+    print m2.sender
+    print m2.perf
+    print m2.inReplyTo
 
 ############ Gateway Test - Generic Message
 

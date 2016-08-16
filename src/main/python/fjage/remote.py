@@ -17,19 +17,18 @@ import uuid as _uuid
 import time as _time
 import socket as _socket
 import multiprocessing as _mp
-from messages import Action
+from messages import AgentID
 from messages import Message
 from messages import GenericMessage
 
-class AgentID:
-    """An identifier for an agent or a topic."""
-
-    def __init__(self, name, is_topic = False):
-            self.name = name
-            if is_topic:
-                self.is_topic = True
-            else:
-                self.is_topic = False
+class Action:
+    AGENTS              = "agents"
+    CONTAINS_AGENT      = "containsAgent"
+    SERVICES            = "services"
+    AGENT_FOR_SERVICE   = "agentForService"
+    AGENTS_FOR_SERVICE  = "agentsForService"
+    SEND                = "send"
+    SHUTDOWN            = "shutdown"
 
 class Gateway:
     """Gateway to communicate with agents from python.
@@ -90,7 +89,7 @@ class Gateway:
                     
                     rsp["inResponseTo"] = req["action"]
                     rsp["id"]           = req["id"]
-                    rsp["agentIDs"]     = self.name
+                    rsp["agentIDs"]     = [self.name]
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == Action.CONTAINS_AGENT:
@@ -395,7 +394,7 @@ class Gateway:
 
             # for testing various incoming message types
             # dt['msgType'] = 'org.arl.fjage.shell.ShellExecReq'
-            dt['msgType'] = 'org.arl.fjage.messages.GenericMessage'
+            # dt['msgType'] = 'org.arl.fjage.messages.GenericMessage'
             # print dt['msgType']
 
             #TODO: Do this programmatically

@@ -14,14 +14,15 @@ TODO:
 import json as _json
 import uuid as _uuid
 
-class Action:
-    AGENTS              = "agents"
-    CONTAINS_AGENT      = "containsAgent"
-    SERVICES            = "services"
-    AGENT_FOR_SERVICE   = "agentForService"
-    AGENTS_FOR_SERVICE  = "agentsForService"
-    SEND                = "send"
-    SHUTDOWN            = "shutdown"
+class AgentID:
+    """An identifier for an agent or a topic."""
+
+    def __init__(self, name, is_topic = False):
+            self.name = name
+            if is_topic:
+                self.is_topic = True
+            else:
+                self.is_topic = False
 
 class Performative:
     REQUEST             = "REQUEST"             # Request an action to be performed.
