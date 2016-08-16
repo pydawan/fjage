@@ -15,27 +15,27 @@ import json as _json
 import uuid as _uuid
 
 class Action:
-    AGENTS = "agents"
-    CONTAINS_AGENT = "containsAgent"
-    SERVICES = "services"
-    AGENT_FOR_SERVICE = "agentForService"
-    AGENTS_FOR_SERVICE = "agentsForService"
-    SEND = "send"
-    SHUTDOWN = "shutdown"
+    AGENTS              = "agents"
+    CONTAINS_AGENT      = "containsAgent"
+    SERVICES            = "services"
+    AGENT_FOR_SERVICE   = "agentForService"
+    AGENTS_FOR_SERVICE  = "agentsForService"
+    SEND                = "send"
+    SHUTDOWN            = "shutdown"
 
 class Performative:
-    REQUEST = "REQUEST"                         # Request an action to be performed.
-    AGREE = "AGREE"                             # Agree to performing the requested action.
-    REFUSE = "REFUSE"                           # Refuse to perform the requested action.
-    FAILURE = "FAILURE"                         # Notification of failure to perform a requested or agreed action.
-    INFORM = "INFORM"                           # Notification of an event.
-    CONFIRM = "CONFIRM"                         # Confirm that the answer to a query is true.
-    DISCONFIRM = "DISCONFIRM"                   # Confirm that the answer to a query is false.
-    QUERY_IF = "QUERY_IF"                       # Query if some statement is true or false.
-    NOT_UNDERSTOOD = "NOT_UNDERSTOOD"           # Notification that a message was not understood.
-    CFP = "CFP"                                 # Call for proposal.
-    PROPOSE = "PROPOSE"                         # Response for CFP.
-    CANCEL = "CANCEL"                           # Cancel pending request.
+    REQUEST             = "REQUEST"             # Request an action to be performed.
+    AGREE               = "AGREE"               # Agree to performing the requested action.
+    REFUSE              = "REFUSE"              # Refuse to perform the requested action.
+    FAILURE             = "FAILURE"             # Notification of failure to perform a requested or agreed action.
+    INFORM              = "INFORM"              # Notification of an event.
+    CONFIRM             = "CONFIRM"             # Confirm that the answer to a query is true.
+    DISCONFIRM          = "DISCONFIRM"          # Confirm that the answer to a query is false.
+    QUERY_IF            = "QUERY_IF"            # Query if some statement is true or false.
+    NOT_UNDERSTOOD      = "NOT_UNDERSTOOD"      # Notification that a message was not understood.
+    CFP                 = "CFP"                 # Call for proposal.
+    PROPOSE             = "PROPOSE"             # Response for CFP.
+    CANCEL              = "CANCEL"              # Cancel pending request.
 
 class Message:
     """Base class for messages transmitted by one agent to another.
@@ -51,8 +51,6 @@ class Message:
         recipient
         sender
         inReplyTo
-
-    NOTE: Message will not be send across without a recipient
     """
 
     def __init__(self, **kwargs):
@@ -62,8 +60,6 @@ class Message:
         self.recipient = None
         self.sender = None
         self.inReplyTo = None
-
-        # TODO: Verify whether the kwargs is used in a correct way.
         self.__dict__.update(kwargs)
 
 class GenericMessage(Message):
@@ -71,7 +67,7 @@ class GenericMessage(Message):
 
     NOTE: Since GenericMessage class is a special case, we have implemented getters and setters
     similar to that in java implementation of fjage. So, use them and do not operate directly
-    on the attributes for GenericMessage. It may be removed in future though.
+    on the attributes for GenericMessage. It may be removed in future.
 
     Attributes:
         map: Is a dictionary
@@ -81,8 +77,6 @@ class GenericMessage(Message):
         #TODO: Verify whether this is the way to call parent's constructor
         Message.__init__(self)
         self.map = dict()
-
-        # TODO: Verify whether the kwargs is used in a correct way.
         self.__dict__.update(kwargs)
 
     def clear(self):
@@ -137,28 +131,34 @@ class GenericMessage(Message):
         self.map[key] = value
         return value
 
-    def get(self, key):
+    def get(self, key, defVal = None):
         """Returns the value to which the specified key is mapped, or None if this map (dict) contains no mapping for the key."""
 
         if key == "performative":
-            return self.perf
-
-        if key == "recipient":
-            return self.recipient
-
-        if key == "sender":
-            return self.sender
-
-        if key == "messageID":
-            return self.msgID
-
-        if key == "inReplyTo":
-            return self.inReplyTo
-
-        if key in self.map:
-            return self.map[key]
+            value = self.perf
+        elif key == "recipient":
+            value = self.recipient
+        elif key == "sender":
+            value = self.sender
+        elif key == "messageID":
+            value = self.msgID
+        elif key == "inReplyTo":
+            value = self.inReplyTo
+        elif key in self.map:
+            value = self.map[key]
         else:
-            return None
+            return defVal
+
+        if isinstance(defVal, str):
+            return str(value)
+        elif isinstance(defVal, int):
+            return int(value)
+        elif isinstance(defVal, long):
+            return long(value)
+        elif isinstance(defVal, float):
+            return float(value)
+        else:
+            return value
 
     def putAll(self, in_map):
         """Copies all of the mappings from the specified map to this map (dict)."""

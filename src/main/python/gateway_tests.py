@@ -102,8 +102,18 @@ except Exception, e:
 #     print m2.sender
 #     print m2.perf
 #     print m2.inReplyTo
+#     # print m2.get_as_string("msgID", "NULL")
 
-# g1.shutdown()
+#     print "-------"
+#     print m2.get("msgID")
+#     print m2.get("recipient")
+#     print m2.get("sender")
+#     print m2.get("map1")
+#     print m2.get("2")
+#     print m2.get("map1", "NULL")
+#     print m2.get("map2", 3.14)
+#     print m2.get("map2", 3L)
+#     print m2.get("map2", 1)
 
 ############ ShellExecReq Message Tests
 
@@ -120,7 +130,14 @@ except Exception, e:
 
 # # m4 = g1.request(m3, 1)
 # if g1.send(m3):
-#     m4 = g1.receive_with_message(m3)
+#     m4 = g1.receive(fjage.messages.Message)
+
+# if m4:
+#     print m4.msgID
+#     print m4.recipient
+#     print m4.sender
+#     print m4.perf
+#     print m4.inReplyTo
 
 # time.sleep(2)
 
@@ -136,15 +153,6 @@ except Exception, e:
 # m6 = fjage.shell.ShellExecReq()
 # # received message
 # m6 = g1.request(m5, 1)
-
-# # m4 = g1.receive_with_message(m3)
-# m4 = g1.receive_with_class(fjage.messages.Message)
-# if m4:
-#     print m4.msgID
-#     print m4.recipient
-#     print m4.sender
-#     print m4.perf
-#     print m4.inReplyTo
 
 # if m6:
 #     print m6.msgID
@@ -199,7 +207,12 @@ except Exception, e:
 #     print i
 
 ############## agentForService ... test
-# g1.agentForService_string("shell")
+# g1.agentForService("shell")
+# g1.agentsForService("shell")
+
+# g1.agentForService(True)
+# time.sleep(2)
+# g1.agentsForService(20)
 
 ############# GenericMessage Tests
 
