@@ -66,6 +66,10 @@ class Gateway:
             self.s.connect((ip, port))
             self.recv = _mp.Process(target=self.__recv_proc, args=(self.q, self.subscribers, ))
             self.recv.start()
+            if self.is_duplicate():
+                self.s.close
+                self.recv.terminate()
+                _sys.exit(0)
 
         except Exception, e:
             print "Exception: " + str(e)
@@ -426,3 +430,14 @@ class Gateway:
         else:
             inst = dt
         return inst
+
+    def is_duplicate(self):
+        rsp = dict()
+        rsp["action"]   = Action.CONTAINS_AGENT
+        rsp["id"]       = str(_uuid.uuid4())
+        rsp["agentID"]  = self.name
+        self.s.sendall(_json.dumps(rsp) + '\n')
+
+        #TODO: Get the response from queue and return "answer" field
+        return False
+
