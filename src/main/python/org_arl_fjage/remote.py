@@ -239,7 +239,7 @@ class Gateway:
                 # print "inReplyto: " + filter.msgID
                 if filter.msgID:
                     for i in self.q:
-                        if filter.msgID == i["inReplyTo"]:
+                        if "inReplyTo" in i and filter.msgID == i["inReplyTo"]:
                             try:
                                 rmsg = self.q.pop(self.q.index(i))
                             except Exception, e:
@@ -270,11 +270,10 @@ class Gateway:
 
             # add map if it is a Generic message
             if rsp.__class__.__name__ == GenericMessage().__class__.__name__:
-                for key in rmsg:
-                    if key == "map":
-                        map = _json.loads(rmsg)["map"]
-                        rsp.putAll(map)
-                        found_map = True
+                if "map" in rmsg:
+                    map = _json.loads(rmsg)["map"]
+                    rsp.putAll(map)
+                    found_map = True
 
                 if not found_map:
                     print "No map field found in Generic Message"
@@ -315,6 +314,7 @@ class Gateway:
                 self.subscribers.append(new_topic.name)
             else:
                 # check whether this topic is already subscribed to
+                #TODO: use list function
                 for tp in self.subscribers:
                     if new_topic.name == tp:
                         print "Error: Already subscribed to topic"
