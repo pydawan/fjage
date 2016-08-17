@@ -8,7 +8,7 @@ for full license details.
 
 """
 
-import org_arl_fjage as fjage
+import fjage
 import time, sys, json, uuid
 
 try:

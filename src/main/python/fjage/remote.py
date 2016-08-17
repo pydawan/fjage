@@ -17,9 +17,9 @@ import uuid as _uuid
 import time as _time
 import socket as _socket
 import threading as _td
-from org_arl_fjage import AgentID
-from org_arl_fjage import Message
-from org_arl_fjage import GenericMessage
+from fjage import AgentID
+from fjage import Message
+from fjage import GenericMessage
 
 class Action:
     AGENTS              = "agents"
@@ -208,9 +208,9 @@ class Gateway:
         j_dict["action"] = Action.SEND
         j_dict["relay"] = True
         msg.sender = self.name
-        m_dict = self.to_json(msg) #TODO: Merge this and next line?
+        m_dict = self.to_json(msg)
+        m_dict["msgType"] = "org.arl."+msg.__module__+"."+msg.__class__.__name__
         j_dict["message"] = m_dict
-        m_dict["msgType"] = ".".join(msg.__module__.split("_"))+"."+msg.__class__.__name__
 
         # check for GenericMessage class and add "map" separately
         if msg.__class__.__name__ == GenericMessage().__class__.__name__:
@@ -218,7 +218,6 @@ class Gateway:
 
         # print "Sending: " + _json.dumps(j_dict) + "\n"
 
-        # send the message
         self.s.sendall(_json.dumps(j_dict) + '\n')
 
         return True
@@ -381,6 +380,9 @@ class Gateway:
         for key in list(dt):
             if dt[key] == None:
                 dt.pop(key)
+            # if the last charactor of an attribute is "_", remove it in json message. E.g. from_
+            elif list(key)[-1] == '_':
+                dt[key[:-1]] = dt.pop(key)
 
             # remove map if its a GenericMessage class (to be added later)
             if key == 'map':
@@ -401,9 +403,11 @@ class Gateway:
             class_name = dt['msgType'].split(".")[-1]
             module_name = dt['msgType'].split(".")
             module_name.remove(module_name[-1])
-            module_name = "_".join(module_name)
-            # print class_name
-            # print module_name
+            module_name.remove("org")
+            module_name.remove("arl")
+            module_name = ".".join(module_name)
+            print class_name
+            print module_name
 
             try:
                 module = __import__(module_name)
