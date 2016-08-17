@@ -64,7 +64,9 @@ class Gateway:
             self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
             self.s.connect((ip, port))
             self.recv = _td.Thread(target=self.__recv_proc, args=(self.q, self.subscribers, ))
+            self.recv.daemon = True
             self.recv.start()
+            #TODO: This has to be a blocking call with timeout
             if self.is_duplicate():
                 self.s.close
                 _sys.exit(0)
@@ -221,6 +223,9 @@ class Gateway:
     # TODO: Implement timeout (using condition variables)
     def receive(self, filter=None, tout=0.1):
         """Returns a message received by the gateway and matching the given filter."""
+
+        rmsg = None
+
         try:
             if tout:
                 _time.sleep(tout)
@@ -239,10 +244,6 @@ class Gateway:
                                 rmsg = self.q.pop(self.q.index(i))
                             except Exception, e:
                                 print "Error: Getting item from list - " +  str(e)
-                        else:
-                            return None
-                else:
-                    return None
 
             elif type(Gateway) == type(filter):
                 # print "msgType: " + str(filter).split(".")[-1]
@@ -252,10 +253,6 @@ class Gateway:
                             rmsg = self.q.pop(self.q.index(i))
                         except Exception, e:
                             print "Error: Getting item from list - " +  str(e)
-                    else:
-                        return None
-            else:
-                return None
 
             if rmsg == None:
                 return None

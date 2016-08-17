@@ -76,74 +76,76 @@ except Exception, e:
 ############ Gateway Test - Generic Message
 
 # msg to send
-m1 = fjage.GenericMessage()
-m1.recipient = '#mno'
+# m1 = fjage.GenericMessage()
+# m1.recipient = '#mno'
 
-# map
-m1.map["map1"] = "mapValue1"
-m1.map["map2"] = "mapValue2"
-m1.map["map3"] = "mapValue3"
-m1.map["map4"] = "mapValue4"
+# # map
+# m1.map["map1"] = "mapValue1"
+# m1.map["map2"] = "mapValue2"
+# m1.map["map3"] = "mapValue3"
+# m1.map["map4"] = "mapValue4"
 
-# received message
-m2 = fjage.GenericMessage()
-# m2 = g1.request(m1, 1)
+# # received message
+# m2 = fjage.GenericMessage()
+# # m2 = g1.request(m1, 1)
 
-if g1.send(m1):
-    m2 = g1.receive(fjage.Message)
+# if g1.send(m1):
+#     m2 = g1.receive(fjage.Message)
 
-if m2:
-    print m2.msgID
-    print m2.recipient
-    print m2.sender
-    print m2.perf
-    print m2.inReplyTo
+# if m2:
+#     print m2.msgID
+#     print m2.recipient
+#     print m2.sender
+#     print m2.perf
+#     print m2.inReplyTo
 
 ############ ShellExecReq Message Tests
 
-# # msg to send
-# m3 = fjage.shell.ShellExecReq()
+# msg to send
+m3 = fjage.shell.ShellExecReq()
 
-# m3.recipient = 'shell'
-# m3.sender = 'rshell'
-# m3.script = {"path":"samples/01_hello.groovy"}
-# m3.args = []
+m3.recipient = 'shell'
+m3.sender = 'rshell'
+m3.script = {"path":"samples/01_hello.groovy"}
+m3.args = []
 
-# # received message
-# m4 = fjage.shell.ShellExecReq()
+# received message
+m4 = fjage.shell.ShellExecReq()
 
-# # m4 = g1.request(m3, 1)
-# if g1.send(m3):
-#     m4 = g1.receive(fjage.Message)
+# m4 = g1.request(m3, 1)
+if g1.send(m3):
+    m4 = g1.receive(fjage.Message)
 
-# if m4:
-#     print m4.msgID
-#     print m4.recipient
-#     print m4.sender
-#     print m4.perf
-#     print m4.inReplyTo
+if m4:
+    print m4.msgID
+    print m4.recipient
+    print m4.sender
+    print m4.perf
+    print m4.inReplyTo
 
-# time.sleep(2)
+time.sleep(2)
 
-# m5 = fjage.shell.ShellExecReq()
-# m5.recipient = 'shell'
-# m5.sender = 'rshell'
-# # NOTE: Make sure either cmd or script has a value
-# m5.script = None
-# m5.args = None
-# m5.cmd = 'services'
-# m5.msgID = str(uuid.uuid4())
+m5 = fjage.shell.ShellExecReq()
+m5.recipient = 'shell'
+m5.sender = 'rshell'
+# NOTE: Make sure either cmd or script has a value
+m5.script = None
+m5.args = None
+m5.cmd = 'services'
+m5.msgID = str(uuid.uuid4())
 
-# m6 = fjage.shell.ShellExecReq()
-# # received message
-# m6 = g1.request(m5, 1)
+m6 = fjage.shell.ShellExecReq()
+# received message
+m6 = g1.request(m5, 1)
 
-# if m6:
-#     print m6.msgID
-#     print m6.recipient
-#     print m6.sender
-#     print m6.perf
-#     print m6.inReplyTo
+if m6:
+    print m6.msgID
+    print m6.recipient
+    print m6.sender
+    print m6.perf
+    print m6.inReplyTo
+
+# g1.disconnect()
 
 ############# AgentID Tests
 # a1 = g1.topic("manu")
