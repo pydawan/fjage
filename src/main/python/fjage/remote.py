@@ -67,7 +67,6 @@ class Gateway:
             self.recv.start()
             if self.is_duplicate():
                 self.s.close
-                self.recv.terminate()
                 _sys.exit(0)
 
         except Exception, e:
@@ -129,13 +128,17 @@ class Gateway:
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == Action.SEND:
-                    #TODO: add message to queue only if:
-                        # 1. if the aid is same as gateway's id/name or
-                        # 2. the message is for a topic in the subscribers list
                     print "ACTION: " + Action.SEND
+
+                    #TODO: add message to queue only if:
+                    # 1. if the aid is same as gateway's id/name or
+                    # 2. the message is for a topic in the subscribers list
                     try:
-                        #TODO: There is a broken pipe error when the server tries to send a message. Investigate
-                        q.append(req["message"])
+                        msg = req["message"]
+                        if self.is_topic(msg["recipient"]):
+                            if self.subscribers.count(msg["recipient"].replace("#","")):
+                                q.append(req["message"])
+
                     except Exception, e:
                         print "Exception: Error adding to queue - " + str(e)
 
@@ -178,7 +181,6 @@ class Gateway:
     def __del__(self):
         try:
             self.s.close
-            self.recv.terminate()
         except Exception, e:
             print "Exception: " + str(e)
 
@@ -325,6 +327,8 @@ class Gateway:
                         print "Error: Already subscribed to topic"
                         return
                 self.subscribers.append(new_topic.name)
+        else:
+            print "Invalid AgentID"
 
     def unsubscribe(self, topic):
         """Unsubscribes the gateway from a given topic."""
@@ -341,6 +345,8 @@ class Gateway:
                 print "Exception: No such topic subscribed: " + new_topic.name
 
             return True
+        else:
+            print "Invalid AgentID"
 
 
     def agentForService(self, service):
@@ -438,4 +444,10 @@ class Gateway:
 
         #TODO: Get the response from queue and return "answer" field
         return False
+
+    def is_topic(self, recipient):
+        if recipient[0] == "#":
+            return True
+        return False
+
 
