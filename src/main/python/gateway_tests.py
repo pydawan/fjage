@@ -40,13 +40,13 @@ except Exception, e:
 ############ Gateway Test - Message
 
 # # msg to send
-# m1 = fjage.messages.Message()
+# m1 = fjage.Message()
 
 # m1.recipient = '#abc'
 # m1.sender = 'rshell'
 
 # # received message
-# m2 = fjage.messages.Message()
+# m2 = fjage.Message()
 
 # # m2 = g1.request(m1, 1)
 # if g1.send(m1):
@@ -76,7 +76,7 @@ except Exception, e:
 ############ Gateway Test - Generic Message
 
 # msg to send
-m1 = fjage.messages.GenericMessage()
+m1 = fjage.GenericMessage()
 
 m1.recipient = '#mno'
 m1.sender = 'rshell'
@@ -88,7 +88,7 @@ m1.map["map3"] = "mapValue3"
 m1.map["map4"] = "mapValue4"
 
 # received message
-m2 = fjage.messages.GenericMessage()
+m2 = fjage.GenericMessage()
 # m2 = g1.request(m1, 1)
 
 if g1.send(m1):
@@ -116,7 +116,7 @@ if m2:
 
 # # m4 = g1.request(m3, 1)
 # if g1.send(m3):
-#     m4 = g1.receive(fjage.messages.Message)
+#     m4 = g1.receive(fjage.Message)
 
 # if m4:
 #     print m4.msgID

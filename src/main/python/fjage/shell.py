@@ -7,8 +7,8 @@ See file LICENSE.txt or go to http://www.opensource.org/licenses/BSD-3-Clause
 for full license details.
 
 """
-from messages import Message
-from messages import Performative
+from fjage import Message
+from fjage import Performative
 
 class ShellExecReq(Message):
     """Request to execute shell command/script.

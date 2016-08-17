@@ -17,9 +17,9 @@ import uuid as _uuid
 import time as _time
 import socket as _socket
 import threading as _td
-from messages import AgentID
-from messages import Message
-from messages import GenericMessage
+from fjage import AgentID
+from fjage import Message
+from fjage import GenericMessage
 
 class Action:
     AGENTS              = "agents"
