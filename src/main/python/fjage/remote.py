@@ -134,10 +134,11 @@ class Gateway:
                     # 1. if the aid is same as gateway's id/name or
                     # 2. the message is for a topic in the subscribers list
                     try:
-                        msg = req["message"]
-                        if self.is_topic(msg["recipient"]):
-                            if self.subscribers.count(msg["recipient"].replace("#","")):
-                                q.append(req["message"])
+                        # msg = req["message"]
+                        # if self.is_topic(msg["recipient"]):
+                        #     if self.subscribers.count(msg["recipient"].replace("#","")):
+                        #         q.append(req["message"])
+                        q.append(req["message"])
 
                     except Exception, e:
                         print "Exception: Error adding to queue - " + str(e)
