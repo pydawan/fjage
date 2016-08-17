@@ -17,9 +17,9 @@ import uuid as _uuid
 import time as _time
 import socket as _socket
 import threading as _td
-from fjage import AgentID
-from fjage import Message
-from fjage import GenericMessage
+from org_arl_fjage import AgentID
+from org_arl_fjage import Message
+from org_arl_fjage import GenericMessage
 
 class Action:
     AGENTS              = "agents"
@@ -158,7 +158,6 @@ class Gateway:
         parenthesis_count = 0
         rmsg = ""
 
-        #TODO: Avoid polling to reduce CPU load?
         while True:
             try:
                 c = self.s.recv(1)
@@ -203,12 +202,10 @@ class Gateway:
         m_dict = dict()
         j_dict["action"] = Action.SEND
         j_dict["relay"] = True
+        msg.sender = self.name
         m_dict = self.to_json(msg) #TODO: Merge this and next line?
         j_dict["message"] = m_dict
-
-        # add msgType field to json
-        # TODO: Get module name programatically : __name__ (- the file name)
-        m_dict["msgType"] = "org.arl."+msg.__module__+"."+msg.__class__.__name__
+        m_dict["msgType"] = ".".join(msg.__module__.split("_"))+"."+msg.__class__.__name__
 
         # check for GenericMessage class and add "map" separately
         if msg.__class__.__name__ == GenericMessage().__class__.__name__:
@@ -248,11 +245,9 @@ class Gateway:
                     return None
 
             elif type(Gateway) == type(filter):
-                # print "msgType: " + str(filter)
+                # print "msgType: " + str(filter).split(".")[-1]
                 for i in self.q:
-                    #TODO: Use proper class name, not hardcoded class name
-                    # if i["msgType"] == str(filter):
-                    if i["msgType"] == "org.arl.fjage.Message":
+                    if i['msgType'].split(".")[-1] == str(filter).split(".")[-1]:
                         try:
                             rmsg = self.q.pop(self.q.index(i))
                         except Exception, e:
@@ -381,40 +376,33 @@ class Gateway:
 
     def to_json(self, inst):
         """Convert the object attributes to a dict."""
-        # copying object's attributes from __dict__ to convert to json
         dt = inst.__dict__.copy()
 
-        # removing empty attributes
         for key in list(dt):
             if dt[key] == None:
                 dt.pop(key)
+
             # remove map if its a GenericMessage class (to be added later)
             if key == 'map':
                 dt.pop(key)
+
+            #TODO: Any attribute ending with "_", remove it
         return dt
         
     def from_json(self, dt):
         """If possible, do class loading, else return the dict."""
-        # print dt
+
+        # for testing various incoming message types
+        # dt['msgType'] = 'org.arl.fjage.shell.ShellExecReq'
+        # dt['msgType'] = 'org.arl.fjage.messages.GenericMessage'
+        # print dt['msgType']
+
         if 'msgType' in dt:
-
-            # for testing various incoming message types
-            # dt['msgType'] = 'org.arl.fjage.shell.ShellExecReq'
-            # dt['msgType'] = 'org.arl.fjage.messages.GenericMessage'
-            # print dt['msgType']
-
-            #TODO: Do this programmatically
-            # parse class name
             class_name = dt['msgType'].split(".")[-1]
+            module_name = dt['msgType'].split(".")
+            module_name.remove(module_name[-1])
+            module_name = "_".join(module_name)
             # print class_name
-
-            # parse module name
-            module_name = dt['msgType'].split(".")  # split the full name
-            module_name.remove(module_name[-1])     # remove class name
-            #TODO: remove org and arl in future
-            module_name.remove('org')               # remove org
-            module_name.remove('arl')               # remove arl
-            module_name = ".".join(module_name)     # join whats left
             # print module_name
 
             try:
@@ -422,15 +410,12 @@ class Gateway:
             except Exception, e:
                 print "Exception in from_json, module: " + str(e)
                 return dt
-            # print 'MODULE: ' + str(module)
             try:
                 class_ = getattr(module, class_name)
             except Exception, e:
                 print "Exception in from_json, class: " + str(e)
                 return dt
-            # print 'CLASS :' + str(class_)
             args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
-            # print 'INSTANCE ARGS:', args
             inst = class_(**args)
         else:
             inst = dt

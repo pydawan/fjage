@@ -8,7 +8,7 @@ for full license details.
 
 """
 
-import fjage
+import org_arl_fjage as fjage
 import time, sys, json, uuid
 
 try:
@@ -77,9 +77,7 @@ except Exception, e:
 
 # msg to send
 m1 = fjage.GenericMessage()
-
 m1.recipient = '#mno'
-m1.sender = 'rshell'
 
 # map
 m1.map["map1"] = "mapValue1"
@@ -92,7 +90,7 @@ m2 = fjage.GenericMessage()
 # m2 = g1.request(m1, 1)
 
 if g1.send(m1):
-    m2 = g1.receive()
+    m2 = g1.receive(fjage.Message)
 
 if m2:
     print m2.msgID
