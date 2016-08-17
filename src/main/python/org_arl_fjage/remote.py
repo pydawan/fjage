@@ -132,16 +132,19 @@ class Gateway:
                 elif value == Action.SEND:
                     print "ACTION: " + Action.SEND
 
-                    #TODO: add message to queue only if:
-                    # 1. if the aid is same as gateway's id/name or
+                    # add message to queue only if:
+                    # 1. if the recipient is same as gateway's name or
                     # 2. the message is for a topic in the subscribers list
                     try:
-                        # msg = req["message"]
-                        # if self.is_topic(msg["recipient"]):
-                        #     if self.subscribers.count(msg["recipient"].replace("#","")):
-                        #         q.append(req["message"])
-                        q.append(req["message"])
+                        # print "name: " + self.name
+                        msg = req["message"]
+                        if msg["recipient"] == self.name:
+                            q.append(req["message"])
 
+                        if self.is_topic(msg["recipient"]):
+                            if self.subscribers.count(msg["recipient"].replace("#","")):
+                                q.append(req["message"])
+                                
                     except Exception, e:
                         print "Exception: Error adding to queue - " + str(e)
 
