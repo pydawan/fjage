@@ -37,7 +37,7 @@ class Performative:
     PROPOSE             = "PROPOSE"             # Response for CFP.
     CANCEL              = "CANCEL"              # Cancel pending request.
 
-class Message:
+class Message(object):
     """Base class for messages transmitted by one agent to another."""
     def __init__(self, **kwargs):
 

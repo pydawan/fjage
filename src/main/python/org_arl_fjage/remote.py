@@ -232,7 +232,7 @@ class Gateway:
             else:
                 _time.sleep(0.1)
 
-            if filter == None:
+            if filter == None and len(self.q):
                 rmsg = self.q.pop()
                 
             elif isinstance(filter, Message):
