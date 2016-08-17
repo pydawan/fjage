@@ -16,7 +16,7 @@ import json as _json
 import uuid as _uuid
 import time as _time
 import socket as _socket
-import multiprocessing as _mp
+import threading as _td
 from messages import AgentID
 from messages import Message
 from messages import GenericMessage
@@ -59,11 +59,11 @@ class Gateway:
                     print "Exception: Cannot assign name to gateway: " + str(e)
                     _sys.exit(0)
 
-            self.q = _mp.Manager().list()
-            self.subscribers = _mp.Manager().list()
+            self.q = list()
+            self.subscribers = list()
             self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
             self.s.connect((ip, port))
-            self.recv = _mp.Process(target=self.__recv_proc, args=(self.q, self.subscribers, ))
+            self.recv = _td.Thread(target=self.__recv_proc, args=(self.q, self.subscribers, ))
             self.recv.start()
             if self.is_duplicate():
                 self.s.close
@@ -151,7 +151,6 @@ class Gateway:
     def __recv_proc(self, q, subscribers):
         """Receive process."""
 
-        self.s.setblocking(0)
         parenthesis_count = 0
         rmsg = ""
 
