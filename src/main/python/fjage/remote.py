@@ -21,7 +21,10 @@ from fjage import AgentID
 from fjage import Message
 from fjage import GenericMessage
 
-current_milli_time = lambda: int(round(_time.time() * 1000))
+currentTimeMillis = lambda: int(round(_time.time() * 1000))
+
+NON_BLOCKING = 0;
+BLOCKING = -1
 
 class Action:
     AGENTS              = "agents"
@@ -66,6 +69,7 @@ class Gateway:
             self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
             self.s.connect((ip, port))
             self.recv = _td.Thread(target=self.__recv_proc, args=(self.q, self.subscribers, ))
+            self.cv = _td.Condition();
             self.recv.daemon = True
             self.recv.start()
             #TODO: This has to be a blocking call with timeout
@@ -142,10 +146,16 @@ class Gateway:
                         msg = req["message"]
                         if msg["recipient"] == self.name:
                             q.append(req["message"])
+                            self.cv.acquire();
+                            self.cv.notify();
+                            self.cv.release();
 
                         if self.is_topic(msg["recipient"]):
                             if self.subscribers.count(msg["recipient"].replace("#","")):
                                 q.append(req["message"])
+                                self.cv.acquire();
+                                self.cv.notify();
+                                self.cv.release();
 
                     except Exception, e:
                         print "Exception: Error adding to queue - " + str(e)
@@ -224,60 +234,71 @@ class Gateway:
 
         return True
 
-    # TODO: Implement timeout
-    # TODO: Implement closure/lambda support
-    def receive(self, filter=None, tout=100):
+    def _retrieveFromQueue(self, filter):
+        rmsg = None
+        try:
+            if filter == None and len(self.q):
+                rmsg = self.q.pop()
+
+            # If filter is a Message, look for a Message in the
+            # receive Queue which was inReplyto that message.
+            elif isinstance(filter, Message):
+                # print "inReplyto: " + filter.msgID
+                if filter.msgID:
+                    for i in self.q:
+                        if "inReplyTo" in i and filter.msgID == i["inReplyTo"]:
+                            try:
+                                rmsg = self.q.pop(self.q.index(i))
+                            except Exception, e:
+                                print "Error: Getting item from list - " +  str(e)
+
+            # If filter is a class, look for a Message of that class.
+            elif type(filter) == type(Message):
+                # print "msgType: " + filter.__name__
+                for i in self.q:
+                    if i['msgType'].split(".")[-1] == filter.__name__:
+                        try:
+                            rmsg = self.q.pop(self.q.index(i))
+                        except Exception, e:
+                            print "Error: Getting item from list - " +  str(e)
+
+            # If filter is a lambda, look for a Message that on which the
+            # lambda returns True.
+            elif isinstance(filter, type(lambda:0)):
+                # print "msgType: " + str(filter).split(".")[-1]
+                for i in self.q:
+                    if filter(i):
+                        try:
+                            rmsg = self.q.pop(self.q.index(i))
+                        except Exception, e:
+                            print "Error: Getting item from list - " +  str(e)
+
+        except Exception, e:
+            print "Error: Queue empty/timeout - " +  str(e)
+
+        return rmsg
+
+    def receive(self, filter=None, timeout=100):
         """Returns a message received by the gateway and matching the given filter."""
 
-        rmsg = None
-        deadline = current_milli_time() + tout
-        now = current_milli_time()
-        while (now <= deadline and rmsg == None):
-            try:
-                if filter == None and len(self.q):
-                    rmsg = self.q.pop()
+        rmsg = self._retrieveFromQueue(filter)
 
-                # If filter is a Message, look for a Message in the
-                # receive Queue which was inReplyto that message.
-                elif isinstance(filter, Message):
-                    # print "inReplyto: " + filter.msgID
-                    if filter.msgID:
-                        for i in self.q:
-                            if "inReplyTo" in i and filter.msgID == i["inReplyTo"]:
-                                try:
-                                    rmsg = self.q.pop(self.q.index(i))
-                                except Exception, e:
-                                    print "Error: Getting item from list - " +  str(e)
+        if (rmsg == None and timeout != NON_BLOCKING):
+            deadline = currentTimeMillis() + timeout
 
-                # If filter is a class, look for a Message of that class.
-                elif type(filter) == type(Message):
-                    # print "msgType: " + filter.__name__
-                    for i in self.q:
-                        if i['msgType'].split(".")[-1] == filter.__name__:
-                            try:
-                                rmsg = self.q.pop(self.q.index(i))
-                            except Exception, e:
-                                print "Error: Getting item from list - " +  str(e)
+            while (rmsg == None and (timeout == BLOCKING or currentTimeMillis() < deadline)):
 
-                # If filter is a lambda, look for a Message that on which the
-                # lambda returns True.
-                elif isinstance(filter, type(lambda:0)):
-                    # print "msgType: " + str(filter).split(".")[-1]
-                    for i in self.q:
-                        if filter(i):
-                            try:
-                                rmsg = self.q.pop(self.q.index(i))
-                            except Exception, e:
-                                print "Error: Getting item from list - " +  str(e)
+                if timeout == BLOCKING:
+                    self.cv.acquire();
+                    self.cv.wait();
+                    self.cv.release();
+                elif timeout > 0:
+                    self.cv.acquire();
+                    t = deadline - currentTimeMillis();
+                    self.cv.wait(t/1000);
+                    self.cv.release();
 
-            except Exception, e:
-                print "Error: Queue empty/timeout - " +  str(e)
-                return None
-
-            now = current_milli_time()
-
-        if rmsg == None:
-            return None
+                rmsg = self._retrieveFromQueue(filter)
 
         # print "Received message: " + str(rmsg) + "\n"
 
@@ -302,10 +323,10 @@ class Gateway:
 
         return rsp
 
-    def request(self, msg, tout=100):
+    def request(self, msg, timeout=100):
         """Return received response message, null if none available."""
         self.send(msg)
-        return self.receive(msg, tout)
+        return self.receive(msg, timeout)
 
     def topic(self, topic):
         """Returns an object representing the named topic."""
@@ -372,6 +393,8 @@ class Gateway:
         else:
             j_dict["service"] = service.__class__.__name__+"."+str(service)
         self.s.sendall(_json.dumps(j_dict) + '\n')
+
+        _time.sleep(5)
 
         #TODO: Get the response from queue and return it
 
