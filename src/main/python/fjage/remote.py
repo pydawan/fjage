@@ -237,6 +237,8 @@ class Gateway:
                 if filter == None and len(self.q):
                     rmsg = self.q.pop()
 
+                # If filter is a Message, look for a Message in the
+                # receive Queue which was inReplyto that message.
                 elif isinstance(filter, Message):
                     # print "inReplyto: " + filter.msgID
                     if filter.msgID:
@@ -247,6 +249,7 @@ class Gateway:
                                 except Exception, e:
                                     print "Error: Getting item from list - " +  str(e)
 
+                # If filter is a class, look for a Message of that class.
                 elif type(filter) == type(Message):
                     # print "msgType: " + filter.__name__
                     for i in self.q:
@@ -256,11 +259,22 @@ class Gateway:
                             except Exception, e:
                                 print "Error: Getting item from list - " +  str(e)
 
+                # If filter is a lambda, look for a Message that on which the
+                # lambda returns True.
+                elif isinstance(filter, type(lambda:0)):
+                    # print "msgType: " + str(filter).split(".")[-1]
+                    for i in self.q:
+                        if filter(i):
+                            try:
+                                rmsg = self.q.pop(self.q.index(i))
+                            except Exception, e:
+                                print "Error: Getting item from list - " +  str(e)
+
             except Exception, e:
                 print "Error: Queue empty/timeout - " +  str(e)
                 return None
 
-            now = current_milli_time();
+            now = current_milli_time()
 
         if rmsg == None:
             return None

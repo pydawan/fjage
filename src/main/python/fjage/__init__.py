@@ -48,6 +48,13 @@ class Message(object):
         self.inReplyTo = None
         self.__dict__.update(kwargs)
 
+    def __str__(self):
+        p = self.perf if self.perf else "MESSAGE";
+        if self.__class__ == Message:
+            return p;
+        return p + ": " + str(self.__class__.__name__);
+
+
 class GenericMessage(Message):
     """A message class that can convey generic messages represented by key-value pairs."""
     def __init__(self, **kwargs):
