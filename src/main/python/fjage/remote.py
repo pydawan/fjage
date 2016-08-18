@@ -89,7 +89,7 @@ class Gateway:
 
                 if value == Action.AGENTS:
                     print "ACTION: " + Action.AGENTS
-                    
+
                     rsp["inResponseTo"] = req["action"]
                     rsp["id"]           = req["id"]
                     rsp["agentIDs"]     = [self.name]
@@ -146,7 +146,7 @@ class Gateway:
                         if self.is_topic(msg["recipient"]):
                             if self.subscribers.count(msg["recipient"].replace("#","")):
                                 q.append(req["message"])
-                                
+
                     except Exception, e:
                         print "Exception: Error adding to queue - " + str(e)
 
@@ -226,7 +226,7 @@ class Gateway:
 
     # TODO: Implement timeout
     # TODO: Implement closure/lambda support
-    def receive(self, filter=None, tout=0.1):
+    def receive(self, filter=None, tout=100):
         """Returns a message received by the gateway and matching the given filter."""
 
         rmsg = None
@@ -236,7 +236,7 @@ class Gateway:
             try:
                 if filter == None and len(self.q):
                     rmsg = self.q.pop()
-                    
+
                 elif isinstance(filter, Message):
                     # print "inReplyto: " + filter.msgID
                     if filter.msgID:
@@ -255,7 +255,7 @@ class Gateway:
                                 rmsg = self.q.pop(self.q.index(i))
                             except Exception, e:
                                 print "Error: Getting item from list - " +  str(e)
-                    
+
             except Exception, e:
                 print "Error: Queue empty/timeout - " +  str(e)
                 return None
@@ -288,7 +288,7 @@ class Gateway:
 
         return rsp
 
-    def request(self, msg, tout):
+    def request(self, msg, tout=100):
         """Return received response message, null if none available."""
         self.send(msg)
         return self.receive(msg, tout)
@@ -297,7 +297,7 @@ class Gateway:
         """Returns an object representing the named topic."""
         if isinstance(topic, str):
             return AgentID(topic, True)
-            
+
         elif isinstance(topic, AgentID):
             if topic.is_topic:
                 return topic
@@ -392,7 +392,7 @@ class Gateway:
 
             #TODO: Any attribute ending with "_", remove it
         return dt
-        
+
     def from_json(self, dt):
         """If possible, do class loading, else return the dict."""
 
@@ -442,5 +442,3 @@ class Gateway:
         if recipient[0] == "#":
             return True
         return False
-
-
