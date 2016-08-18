@@ -21,6 +21,8 @@ from fjage import AgentID
 from fjage import Message
 from fjage import GenericMessage
 
+current_milli_time = lambda: int(round(_time.time() * 1000))
+
 class Action:
     AGENTS              = "agents"
     CONTAINS_AGENT      = "containsAgent"
@@ -228,40 +230,39 @@ class Gateway:
         """Returns a message received by the gateway and matching the given filter."""
 
         rmsg = None
+        deadline = current_milli_time() + tout
+        now = current_milli_time()
+        while (now <= deadline and rmsg == None):
+            try:
+                if filter == None and len(self.q):
+                    rmsg = self.q.pop()
+                    
+                elif isinstance(filter, Message):
+                    # print "inReplyto: " + filter.msgID
+                    if filter.msgID:
+                        for i in self.q:
+                            if "inReplyTo" in i and filter.msgID == i["inReplyTo"]:
+                                try:
+                                    rmsg = self.q.pop(self.q.index(i))
+                                except Exception, e:
+                                    print "Error: Getting item from list - " +  str(e)
 
-        try:
-            if tout:
-                _time.sleep(tout)
-            else:
-                _time.sleep(0.1)
-
-            if filter == None and len(self.q):
-                rmsg = self.q.pop()
-                
-            elif isinstance(filter, Message):
-                # print "inReplyto: " + filter.msgID
-                if filter.msgID:
+                elif type(filter) == type(Message):
+                    # print "msgType: " + filter.__name__
                     for i in self.q:
-                        if "inReplyTo" in i and filter.msgID == i["inReplyTo"]:
+                        if i['msgType'].split(".")[-1] == filter.__name__:
                             try:
                                 rmsg = self.q.pop(self.q.index(i))
                             except Exception, e:
                                 print "Error: Getting item from list - " +  str(e)
-
-            elif type(filter) == type(Message):
-                # print "msgType: " + filter.__name__
-                for i in self.q:
-                    if i['msgType'].split(".")[-1] == filter.__name__:
-                        try:
-                            rmsg = self.q.pop(self.q.index(i))
-                        except Exception, e:
-                            print "Error: Getting item from list - " +  str(e)
-
-            if rmsg == None:
+                    
+            except Exception, e:
+                print "Error: Queue empty/timeout - " +  str(e)
                 return None
-                
-        except Exception, e:
-            print "Error: Queue empty/timeout - " +  str(e)
+
+            now = current_milli_time();
+
+        if rmsg == None:
             return None
 
         # print "Received message: " + str(rmsg) + "\n"

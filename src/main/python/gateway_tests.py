@@ -24,7 +24,7 @@ except Exception, e:
 #     'action':'containsAgent',
 #     'agentID':'shell'
 #     }
-# print(g1.request(data1, 1))
+# print(g1.request(data1, 1000))
 
 # data2 = {
 #     'action' : 'send',
@@ -48,7 +48,7 @@ except Exception, e:
 # # received message
 # m2 = fjage.Message()
 
-# # m2 = g1.request(m1, 1)
+# # m2 = g1.request(m1, 1000)
 # if g1.send(m1):
 #     m2 = g1.receive()
 
@@ -62,7 +62,7 @@ except Exception, e:
 # m1.recipient = '#def'
 # m1.sender = 'rshell'
 
-# # m2 = g1.request(m1, 1)
+# # m2 = g1.request(m1, 1000)
 # if g1.send(m1):
 #     m2 = g1.receive()
 
@@ -87,7 +87,7 @@ except Exception, e:
 
 # # received message
 # m2 = fjage.GenericMessage()
-# # m2 = g1.request(m1, 1)
+# # m2 = g1.request(m1, 1000)
 
 # if g1.send(m1):
 #     m2 = g1.receive(fjage.Message)
@@ -112,9 +112,8 @@ m3.args = []
 # received message
 m4 = fjage.shell.ShellExecReq()
 
-# m4 = g1.request(m3, 1)
 if g1.send(m3):
-    m4 = g1.receive(fjage.Message, 1)
+    m4 = g1.receive(fjage.Message, 10000)
 
 if m4:
     print m4.msgID
@@ -123,7 +122,7 @@ if m4:
     print m4.perf
     print m4.inReplyTo
 
-time.sleep(2)
+# time.sleep(2)
 
 m5 = fjage.shell.ShellExecReq()
 m5.recipient = 'shell'
@@ -136,7 +135,7 @@ m5.msgID = str(uuid.uuid4())
 
 m6 = fjage.shell.ShellExecReq()
 # received message
-m6 = g1.request(m5, 1)
+m6 = g1.request(m5, 10000)
 
 if m6:
     print m6.msgID
