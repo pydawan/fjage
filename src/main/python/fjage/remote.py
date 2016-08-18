@@ -421,7 +421,8 @@ class Gateway:
             except Exception, e:
                 print "Exception in from_json, class: " + str(e)
                 return dt
-            args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
+            # args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
+            args = dict((key.encode('ascii'), value if (isinstance(value, int) or isinstance(value, float)) else value.encode('ascii')) for key, value in dt.items())
             inst = class_(**args)
         else:
             inst = dt
