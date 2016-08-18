@@ -278,7 +278,7 @@ class Gateway:
 
         return rmsg
 
-    def receive(self, filter=None, timeout=100):
+    def receive(self, filter=None, timeout=0):
         """Returns a message received by the gateway and matching the given filter."""
 
         rmsg = self._retrieveFromQueue(filter)
@@ -323,7 +323,7 @@ class Gateway:
 
         return rsp
 
-    def request(self, msg, timeout=100):
+    def request(self, msg, timeout=1000):
         """Return received response message, null if none available."""
         self.send(msg)
         return self.receive(msg, timeout)
