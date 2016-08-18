@@ -222,7 +222,8 @@ class Gateway:
 
         return True
 
-    # TODO: Implement timeout (using condition variables)
+    # TODO: Implement timeout
+    # TODO: Implement closure/lambda support
     def receive(self, filter=None, tout=0.1):
         """Returns a message received by the gateway and matching the given filter."""
 
@@ -247,10 +248,10 @@ class Gateway:
                             except Exception, e:
                                 print "Error: Getting item from list - " +  str(e)
 
-            elif type(Gateway) == type(filter):
-                # print "msgType: " + str(filter).split(".")[-1]
+            elif type(filter) == type(Message):
+                # print "msgType: " + filter.__name__
                 for i in self.q:
-                    if i['msgType'].split(".")[-1] == str(filter).split(".")[-1]:
+                    if i['msgType'].split(".")[-1] == filter.__name__:
                         try:
                             rmsg = self.q.pop(self.q.index(i))
                         except Exception, e:
@@ -406,8 +407,8 @@ class Gateway:
             module_name.remove("org")
             module_name.remove("arl")
             module_name = ".".join(module_name)
-            print class_name
-            print module_name
+            # print class_name
+            # print module_name
 
             try:
                 module = __import__(module_name)

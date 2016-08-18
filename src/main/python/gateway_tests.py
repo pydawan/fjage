@@ -114,7 +114,7 @@ m4 = fjage.shell.ShellExecReq()
 
 # m4 = g1.request(m3, 1)
 if g1.send(m3):
-    m4 = g1.receive(fjage.Message)
+    m4 = g1.receive(fjage.Message, 1)
 
 if m4:
     print m4.msgID
@@ -144,8 +144,6 @@ if m6:
     print m6.sender
     print m6.perf
     print m6.inReplyTo
-
-# g1.disconnect()
 
 ############# AgentID Tests
 # a1 = g1.topic("manu")
