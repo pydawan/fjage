@@ -23,9 +23,6 @@ from fjage import GenericMessage
 
 currentTimeMillis = lambda: int(round(_time.time() * 1000))
 
-NON_BLOCKING = 0;
-BLOCKING = -1
-
 class Action:
     AGENTS              = "agents"
     CONTAINS_AGENT      = "containsAgent"
@@ -50,6 +47,9 @@ class Gateway:
         message
         relay
     """
+
+    NON_BLOCKING = 0;
+    BLOCKING = -1
 
     def __init__(self, ip, port, name = None):
         """NOTE: Developer must make sure a duplicate name is not assigned to the Gateway."""
@@ -283,12 +283,12 @@ class Gateway:
 
         rmsg = self._retrieveFromQueue(filter)
 
-        if (rmsg == None and timeout != NON_BLOCKING):
+        if (rmsg == None and timeout != self.NON_BLOCKING):
             deadline = currentTimeMillis() + timeout
 
-            while (rmsg == None and (timeout == BLOCKING or currentTimeMillis() < deadline)):
+            while (rmsg == None and (timeout == self.BLOCKING or currentTimeMillis() < deadline)):
 
-                if timeout == BLOCKING:
+                if timeout == self.BLOCKING:
                     self.cv.acquire();
                     self.cv.wait();
                     self.cv.release();
