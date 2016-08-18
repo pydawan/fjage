@@ -145,14 +145,14 @@ class Gateway:
                         # print "name: " + self.name
                         msg = req["message"]
                         if msg["recipient"] == self.name:
-                            q.append(req["message"])
+                            q.append(msg)
                             self.cv.acquire();
                             self.cv.notify();
                             self.cv.release();
 
                         if self.is_topic(msg["recipient"]):
                             if self.subscribers.count(msg["recipient"].replace("#","")):
-                                q.append(req["message"])
+                                q.append(msg)
                                 self.cv.acquire();
                                 self.cv.notify();
                                 self.cv.release();
@@ -301,6 +301,8 @@ class Gateway:
                 rmsg = self._retrieveFromQueue(filter)
 
         # print "Received message: " + str(rmsg) + "\n"
+        if not rmsg
+            return None
 
         try:
             rsp = self.from_json(rmsg)
