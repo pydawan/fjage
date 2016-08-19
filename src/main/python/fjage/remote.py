@@ -17,11 +17,13 @@ import uuid as _uuid
 import time as _time
 import socket as _socket
 import threading as _td
+import logging as _log
+
 from fjage import AgentID
 from fjage import Message
 from fjage import GenericMessage
 
-currentTimeMillis = lambda: int(round(_time.time() * 1000))
+current_time_millis = lambda: int(round(_time.time() * 1000))
 
 class Action:
     AGENTS              = "agents"
@@ -51,8 +53,17 @@ class Gateway:
     NON_BLOCKING = 0;
     BLOCKING = -1
 
-    def __init__(self, ip, port, name = None):
+    def __init__(self, hostname, port, name = None):
         """NOTE: Developer must make sure a duplicate name is not assigned to the Gateway."""
+
+        # Mapping LogLevels between fjage.py and fjage
+        # CRITICAL:50 - SEVERE (highest value)
+        # ERROR:40
+        # WARNING:30 WARNING
+        # INFO:20 INFO
+        # DEBUG:10 FINE/FINER/FINEST
+        # NOTSET:0
+        self.logger = _log.getLogger('org.arl.fjage')
 
         try:
             if name == None:
@@ -61,24 +72,26 @@ class Gateway:
                 try:
                     self.name = name
                 except Exception, e:
-                    print "Exception: Cannot assign name to gateway: " + str(e)
+                    self.self.logger.critical("Exception: Cannot assign name to gateway: " + str(e))
                     _sys.exit(0)
 
             self.q = list()
             self.subscribers = list()
             self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
-            self.s.connect((ip, port))
+            self.logger.info("Connecting to "+str(hostname)+":"+str(port));
+            self.s.connect((hostname, port))
             self.recv = _td.Thread(target=self.__recv_proc, args=(self.q, self.subscribers, ))
             self.cv = _td.Condition();
             self.recv.daemon = True
             self.recv.start()
             #TODO: This has to be a blocking call with timeout
             if self.is_duplicate():
+                self.logger.critical("Duplicate Gateway found. Shutting down.");
                 self.s.close
                 _sys.exit(0)
 
         except Exception, e:
-            print "Exception: " + str(e)
+            self.logger.critical("Exception: " + str(e))
             _sys.exit(0)
 
     def parse_incoming(self, rmsg, q):
@@ -92,7 +105,7 @@ class Gateway:
             if key == 'action':
 
                 if value == Action.AGENTS:
-                    print "ACTION: " + Action.AGENTS
+                    # self.logger.debug("ACTION: " + Action.AGENTS)
 
                     rsp["inResponseTo"] = req["action"]
                     rsp["id"]           = req["id"]
@@ -100,7 +113,7 @@ class Gateway:
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == Action.CONTAINS_AGENT:
-                    print "ACTION: " + Action.CONTAINS_AGENT
+                    # self.logger.debug("ACTION: " + Action.CONTAINS_AGENT)
 
                     rsp["inResponseTo"] = req["action"]
                     rsp["id"]           = req["id"]
@@ -112,7 +125,7 @@ class Gateway:
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == Action.SERVICES:
-                    print "ACTION: " + Action.SERVICES
+                    # self.logger.debug("ACTION: " + Action.SERVICES)
 
                     rsp["inResponseTo"] = req["action"]
                     rsp["id"]           = req["id"]
@@ -120,7 +133,7 @@ class Gateway:
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == Action.AGENT_FOR_SERVICE:
-                    print "ACTION: " + Action.AGENT_FOR_SERVICE
+                    # self.logger.debug("ACTION: " + Action.AGENT_FOR_SERVICE)
 
                     rsp["inResponseTo"] = req["action"]
                     rsp["id"]           = req["id"]
@@ -128,7 +141,7 @@ class Gateway:
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == Action.AGENTS_FOR_SERVICE:
-                    print "ACTION: " + Action.AGENTS_FOR_SERVICE
+                    # self.logger.debug("ACTION: " + Action.AGENTS_FOR_SERVICE)
 
                     rsp["inResponseTo"] = req["action"]
                     rsp["id"]           = req["id"]
@@ -136,13 +149,12 @@ class Gateway:
                     self.s.sendall(_json.dumps(rsp) + '\n')
 
                 elif value == Action.SEND:
-                    print "ACTION: " + Action.SEND
+                    # self.logger.debug("ACTION: " + Action.SEND)
 
                     # add message to queue only if:
                     # 1. if the recipient is same as gateway's name or
                     # 2. the message is for a topic in the subscribers list
                     try:
-                        # print "name: " + self.name
                         msg = req["message"]
                         if msg["recipient"] == self.name:
                             q.append(msg)
@@ -158,14 +170,14 @@ class Gateway:
                                 self.cv.release();
 
                     except Exception, e:
-                        print "Exception: Error adding to queue - " + str(e)
+                        self.logger.severe("Exception: Error adding to queue - " + str(e))
 
                 elif value == Action.SHUTDOWN:
-                    print "ACTION: " + Action.SHUTDOWN
+                    self.logger.debug("ACTION: " + Action.SHUTDOWN)
                     return None
 
                 else:
-                    print "Invalid message, discarding"
+                    self.logger.warning("Invalid message, discarding")
 
         return True
 
@@ -185,7 +197,8 @@ class Gateway:
                 if c == '}':
                     parenthesis_count -= 1
                     if parenthesis_count == 0:
-                        # print "Received: " + rmsg
+                        name = self.s.getpeername()
+                        self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg)
                         msg = self.parse_incoming(rmsg, q)
 
                         if msg == None:
@@ -199,7 +212,7 @@ class Gateway:
         try:
             self.s.close
         except Exception, e:
-            print "Exception: " + str(e)
+            self.logger.severe("Exception: " + str(e))
 
     def shutdown(self):
         """Shutdown master container."""
@@ -228,9 +241,11 @@ class Gateway:
         if msg.__class__.__name__ == GenericMessage().__class__.__name__:
             j_dict["map"] = msg.map
 
-        # print "Sending: " + _json.dumps(j_dict) + "\n"
+        json_str = _json.dumps(j_dict)
 
-        self.s.sendall(_json.dumps(j_dict) + '\n')
+        name = self.s.getpeername()
+        self.logger.debug(str(name[0])+ ":" + str(name[1]) + " >>> "+json_str)
+        self.s.sendall(json_str + '\n')
 
         return True
 
@@ -243,38 +258,35 @@ class Gateway:
             # If filter is a Message, look for a Message in the
             # receive Queue which was inReplyto that message.
             elif isinstance(filter, Message):
-                # print "inReplyto: " + filter.msgID
                 if filter.msgID:
                     for i in self.q:
                         if "inReplyTo" in i and filter.msgID == i["inReplyTo"]:
                             try:
                                 rmsg = self.q.pop(self.q.index(i))
                             except Exception, e:
-                                print "Error: Getting item from list - " +  str(e)
+                                self.logger.severe("Error: Getting item from list - " +  str(e))
 
             # If filter is a class, look for a Message of that class.
             elif type(filter) == type(Message):
-                # print "msgType: " + filter.__name__
                 for i in self.q:
                     if i['msgType'].split(".")[-1] == filter.__name__:
                         try:
                             rmsg = self.q.pop(self.q.index(i))
                         except Exception, e:
-                            print "Error: Getting item from list - " +  str(e)
+                            self.logger.severe("Error: Getting item from list - " +  str(e))
 
             # If filter is a lambda, look for a Message that on which the
             # lambda returns True.
             elif isinstance(filter, type(lambda:0)):
-                # print "msgType: " + str(filter).split(".")[-1]
                 for i in self.q:
                     if filter(i):
                         try:
                             rmsg = self.q.pop(self.q.index(i))
                         except Exception, e:
-                            print "Error: Getting item from list - " +  str(e)
+                            self.logger.severe("Error: Getting item from list - " +  str(e))
 
         except Exception, e:
-            print "Error: Queue empty/timeout - " +  str(e)
+            self.logger.severe("Error: Queue empty/timeout - " +  str(e))
 
         return rmsg
 
@@ -284,9 +296,9 @@ class Gateway:
         rmsg = self._retrieveFromQueue(filter)
 
         if (rmsg == None and timeout != self.NON_BLOCKING):
-            deadline = currentTimeMillis() + timeout
+            deadline = current_time_millis() + timeout
 
-            while (rmsg == None and (timeout == self.BLOCKING or currentTimeMillis() < deadline)):
+            while (rmsg == None and (timeout == self.BLOCKING or current_time_millis() < deadline)):
 
                 if timeout == self.BLOCKING:
                     self.cv.acquire();
@@ -294,14 +306,13 @@ class Gateway:
                     self.cv.release();
                 elif timeout > 0:
                     self.cv.acquire();
-                    t = deadline - currentTimeMillis();
+                    t = deadline - current_time_millis();
                     self.cv.wait(t/1000);
                     self.cv.release();
 
                 rmsg = self._retrieveFromQueue(filter)
 
-        # print "Received message: " + str(rmsg) + "\n"
-        if not rmsg
+        if not rmsg:
             return None
 
         try:
@@ -317,10 +328,10 @@ class Gateway:
                     found_map = True
 
                 if not found_map:
-                    print "No map field found in Generic Message"
+                    self.logger.warning("No map field found in Generic Message")
 
         except Exception, e:
-            print "Exception: Class loading failed - " + str(e)
+            self.logger.severe("Exception: Class loading failed - " + str(e))
             return None
 
         return rsp
@@ -358,11 +369,11 @@ class Gateway:
                 #TODO: use list function
                 for tp in self.subscribers:
                     if new_topic.name == tp:
-                        print "Error: Already subscribed to topic"
+                        self.logger.severe("Error: Already subscribed to topic")
                         return
                 self.subscribers.append(new_topic.name)
         else:
-            print "Invalid AgentID"
+            self.logger.severe("Invalid AgentID")
 
     def unsubscribe(self, topic):
         """Unsubscribes the gateway from a given topic."""
@@ -376,11 +387,11 @@ class Gateway:
             try:
                 self.subscribers.remove(new_topic.name)
             except:
-                print "Exception: No such topic subscribed: " + new_topic.name
+                self.logger.severe("Exception: No such topic subscribed: " + new_topic.name)
 
             return True
         else:
-            print "Invalid AgentID"
+            self.logger.severe("Invalid AgentID")
 
 
     def agentForService(self, service):
@@ -438,7 +449,6 @@ class Gateway:
         # for testing various incoming message types
         # dt['msgType'] = 'org.arl.fjage.shell.ShellExecReq'
         # dt['msgType'] = 'org.arl.fjage.messages.GenericMessage'
-        # print dt['msgType']
 
         if 'msgType' in dt:
             class_name = dt['msgType'].split(".")[-1]
@@ -447,18 +457,16 @@ class Gateway:
             module_name.remove("org")
             module_name.remove("arl")
             module_name = ".".join(module_name)
-            # print class_name
-            # print module_name
 
             try:
                 module = __import__(module_name)
             except Exception, e:
-                print "Exception in from_json, module: " + str(e)
+                self.logger.severe("Exception in from_json, module: " + str(e))
                 return dt
             try:
                 class_ = getattr(module, class_name)
             except Exception, e:
-                print "Exception in from_json, class: " + str(e)
+                self.logger.severe("Exception in from_json, class: " + str(e))
                 return dt
             # args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
             args = dict((key.encode('ascii'), value if (isinstance(value, int) or isinstance(value, float)) else value.encode('ascii')) for key, value in dt.items())

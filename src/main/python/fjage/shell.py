@@ -29,8 +29,7 @@ class ShellExecReq(Message):
 
     def __init__(self, **kwargs):
 
-        #TODO: Verify whether this is the way to call parent's constructor
-        Message.__init__(self)
+        super(ShellExecReq, self).__init__()
         self.perf = Performative.REQUEST
         self.cmd = None
         self.script = None

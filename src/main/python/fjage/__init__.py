@@ -12,6 +12,7 @@ TODO:
 """
 
 import uuid as _uuid
+import logging
 
 class AgentID:
     """An identifier for an agent or a topic."""
@@ -58,10 +59,31 @@ class Message(object):
 class GenericMessage(Message):
     """A message class that can convey generic messages represented by key-value pairs."""
     def __init__(self, **kwargs):
-        #TODO: Verify whether this is the way to call parent's constructor
-        Message.__init__(self)
+        super(GenericMessage, self).__init__()
         self.map = dict()
         self.__dict__.update(kwargs)
+
+
+def initLogging():
+    # create logger
+    logger = logging.getLogger('org.arl.fjage')
+    logger.setLevel(logging.DEBUG)
+
+    # create console handler and set level to debug
+    ch = logging.FileHandler('logs/log-python.txt')
+    ch.setLevel(logging.DEBUG)
+
+    # create formatter
+    formatter = logging.Formatter('%(created)11.3f|%(levelname)s|%(filename)s@%(lineno)d:%(funcName)s|%(message)s',datefmt='%s')
+
+    # add formatter to ch
+    ch.setFormatter(formatter)
+
+    # add ch to logger
+    logger.addHandler(ch)
+
+# Start logging
+initLogging()
 
 from remote import *
 from shell import *
