@@ -170,7 +170,7 @@ class Gateway:
                                 self.cv.release();
 
                     except Exception, e:
-                        self.logger.severe("Exception: Error adding to queue - " + str(e))
+                        self.logger.critical("Exception: Error adding to queue - " + str(e))
 
                 elif value == Action.SHUTDOWN:
                     self.logger.debug("ACTION: " + Action.SHUTDOWN)
@@ -212,7 +212,7 @@ class Gateway:
         try:
             self.s.close
         except Exception, e:
-            self.logger.severe("Exception: " + str(e))
+            self.logger.critical("Exception: " + str(e))
 
     def shutdown(self):
         """Shutdown master container."""
@@ -264,7 +264,7 @@ class Gateway:
                             try:
                                 rmsg = self.q.pop(self.q.index(i))
                             except Exception, e:
-                                self.logger.severe("Error: Getting item from list - " +  str(e))
+                                self.logger.critical("Error: Getting item from list - " +  str(e))
 
             # If filter is a class, look for a Message of that class.
             elif type(filter) == type(Message):
@@ -273,7 +273,7 @@ class Gateway:
                         try:
                             rmsg = self.q.pop(self.q.index(i))
                         except Exception, e:
-                            self.logger.severe("Error: Getting item from list - " +  str(e))
+                            self.logger.critical("Error: Getting item from list - " +  str(e))
 
             # If filter is a lambda, look for a Message that on which the
             # lambda returns True.
@@ -283,10 +283,10 @@ class Gateway:
                         try:
                             rmsg = self.q.pop(self.q.index(i))
                         except Exception, e:
-                            self.logger.severe("Error: Getting item from list - " +  str(e))
+                            self.logger.critical("Error: Getting item from list - " +  str(e))
 
         except Exception, e:
-            self.logger.severe("Error: Queue empty/timeout - " +  str(e))
+            self.logger.critical("Error: Queue empty/timeout - " +  str(e))
 
         return rmsg
 
@@ -331,7 +331,7 @@ class Gateway:
                     self.logger.warning("No map field found in Generic Message")
 
         except Exception, e:
-            self.logger.severe("Exception: Class loading failed - " + str(e))
+            self.logger.critical("Exception: Class loading failed - " + str(e))
             return None
 
         return rsp
@@ -369,11 +369,11 @@ class Gateway:
                 #TODO: use list function
                 for tp in self.subscribers:
                     if new_topic.name == tp:
-                        self.logger.severe("Error: Already subscribed to topic")
+                        self.logger.critical("Error: Already subscribed to topic")
                         return
                 self.subscribers.append(new_topic.name)
         else:
-            self.logger.severe("Invalid AgentID")
+            self.logger.critical("Invalid AgentID")
 
     def unsubscribe(self, topic):
         """Unsubscribes the gateway from a given topic."""
@@ -387,11 +387,11 @@ class Gateway:
             try:
                 self.subscribers.remove(new_topic.name)
             except:
-                self.logger.severe("Exception: No such topic subscribed: " + new_topic.name)
+                self.logger.critical("Exception: No such topic subscribed: " + new_topic.name)
 
             return True
         else:
-            self.logger.severe("Invalid AgentID")
+            self.logger.critical("Invalid AgentID")
 
 
     def agentForService(self, service):
@@ -461,15 +461,29 @@ class Gateway:
             try:
                 module = __import__(module_name)
             except Exception, e:
-                self.logger.severe("Exception in from_json, module: " + str(e))
+                self.logger.critical("Exception in from_json, module: " + str(e))
                 return dt
             try:
                 class_ = getattr(module, class_name)
             except Exception, e:
-                self.logger.severe("Exception in from_json, class: " + str(e))
+                self.logger.critical("Exception in from_json, class: " + str(e))
                 return dt
             # args = dict((key.encode('ascii'), value.encode('ascii')) for key, value in dt.items())
-            args = dict((key.encode('ascii'), value if (isinstance(value, int) or isinstance(value, float)) else value.encode('ascii')) for key, value in dt.items())
+            # args = dict((key.encode('ascii'), value if (isinstance(value, int) or isinstance(value, float)) else value.encode('ascii')) for key, value in dt.items())
+            args = dict()
+            for key, value in dt.items():
+                # Numerical values
+                if (isinstance(value, int) or isinstance(value, float)):
+                    args[key.encode('ascii')] = value
+                # Lists/Arrays
+                elif isinstance(value, list) :
+                    args[key.encode('ascii')] = value
+                # Strings
+                elif isinstance(value, basestring):
+                    args[key.encode('ascii')] = value.encode('ascii')
+                else:
+                    args[key.encode('ascii')] = value
+
             inst = class_(**args)
         else:
             inst = dt
