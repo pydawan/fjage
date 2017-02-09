@@ -11,8 +11,11 @@ for full license details.
 import fjage
 import time, sys, json, uuid
 
+print "Starting Tests..."
+
 try:
 	g1 = fjage.remote.Gateway('localhost', 5081, "PythonGW")
+	print "Connected"
 except Exception, e:
     print "Exception:" + str(e)
     sys.exit(0)
@@ -102,47 +105,47 @@ except Exception, e:
 ############ ShellExecReq Message Tests
 
 # msg to send
-m3 = fjage.shell.ShellExecReq()
-
-m3.recipient = 'shell'
-m3.sender = 'rshell'
-m3.script = {"path":"samples/01_hello.groovy"}
-m3.args = []
-
-# received message
-m4 = fjage.shell.ShellExecReq()
-
-if g1.send(m3):
-    m4 = g1.receive(fjage.Message, 10000)
-
-if m4:
-    print m4.msgID
-    print m4.recipient
-    print m4.sender
-    print m4.perf
-    print m4.inReplyTo
-
-# time.sleep(2)
-
-m5 = fjage.shell.ShellExecReq()
-m5.recipient = 'shell'
-m5.sender = 'rshell'
-# NOTE: Make sure either cmd or script has a value
-m5.script = None
-m5.args = None
-m5.cmd = 'services'
-m5.msgID = str(uuid.uuid4())
-
-m6 = fjage.shell.ShellExecReq()
-# received message
-m6 = g1.request(m5, 10000)
-
-if m6:
-    print m6.msgID
-    print m6.recipient
-    print m6.sender
-    print m6.perf
-    print m6.inReplyTo
+# m3 = fjage.shell.ShellExecReq()
+#
+# m3.recipient = 'shell'
+# m3.sender = 'rshell'
+# m3.script = {"path":"samples/01_hello.groovy"}
+# m3.args = []
+#
+# # received message
+# m4 = fjage.shell.ShellExecReq()
+#
+# if g1.send(m3):
+#     m4 = g1.receive(fjage.Message, 10000)
+#
+# if m4:
+#     print m4.msgID
+#     print m4.recipient
+#     print m4.sender
+#     print m4.perf
+#     print m4.inReplyTo
+#
+# # time.sleep(2)
+#
+# m5 = fjage.shell.ShellExecReq()
+# m5.recipient = 'shell'
+# m5.sender = 'rshell'
+# # NOTE: Make sure either cmd or script has a value
+# m5.script = None
+# m5.args = None
+# m5.cmd = 'services'
+# m5.msgID = str(uuid.uuid4())
+#
+# m6 = fjage.shell.ShellExecReq()
+# # received message
+# m6 = g1.request(m5, 10000)
+#
+# if m6:
+#     print m6.msgID
+#     print m6.recipient
+#     print m6.sender
+#     print m6.perf
+#     print m6.inReplyTo
 
 ############# AgentID Tests
 # a1 = g1.topic("manu")
@@ -192,10 +195,12 @@ if m6:
 # for i in g1.subscribers:
 #     print i
 
-############## agentForService ... test
-# g1.agentForService("shell")
-# g1.agentsForService("shell")
-
+############# agentForService ... test
+ret = g1.agentForService("org.arl.fjage.shell.Services.SHELL")
+print ret
+ret = g1.agentsForService("org.arl.fjage.shell.Services.SHELL")
+print ret
+#
 # g1.agentForService(True)
 # time.sleep(2)
 # g1.agentsForService(20)

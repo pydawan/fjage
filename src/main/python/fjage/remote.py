@@ -77,6 +77,7 @@ class Gateway:
 
             self.q = list()
             self.subscribers = list()
+            self.pending = dict()
             self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
             self.logger.info("Connecting to "+str(hostname)+":"+str(port));
             self.s.connect((hostname, port))
@@ -100,85 +101,91 @@ class Gateway:
         req = _json.loads(rmsg)
         rsp = dict()
 
-        for key, value in req.items():
-            rsp.clear()
-            if key == 'action':
+        if "id" in req:
+            req['id'] = _uuid.UUID(req['id'])
 
-                if value == Action.AGENTS:
-                    # self.logger.debug("ACTION: " + Action.AGENTS)
+        if "action" in req:
 
-                    rsp["inResponseTo"] = req["action"]
-                    rsp["id"]           = req["id"]
-                    rsp["agentIDs"]     = [self.name]
-                    self.s.sendall(_json.dumps(rsp) + '\n')
+            if req["action"] == Action.AGENTS:
+                # self.logger.debug("ACTION: " + Action.AGENTS)
 
-                elif value == Action.CONTAINS_AGENT:
-                    # self.logger.debug("ACTION: " + Action.CONTAINS_AGENT)
+                rsp["inResponseTo"] = req["action"]
+                rsp["id"]           = str(req["id"])
+                rsp["agentIDs"]     = [self.name]
+                self.s.sendall(_json.dumps(rsp) + '\n')
 
-                    rsp["inResponseTo"] = req["action"]
-                    rsp["id"]           = req["id"]
-                    answer = False
-                    if req["agentID"]:
-                        if req["agentID"] == self.name:
-                            answer = True
-                    rsp["answer"]       = answer
-                    self.s.sendall(_json.dumps(rsp) + '\n')
+            elif req["action"] == Action.CONTAINS_AGENT:
+                # self.logger.debug("ACTION: " + Action.CONTAINS_AGENT)
 
-                elif value == Action.SERVICES:
-                    # self.logger.debug("ACTION: " + Action.SERVICES)
+                rsp["inResponseTo"] = req["action"]
+                rsp["id"]           = str(req["id"])
+                answer = False
+                if req["agentID"]:
+                    if req["agentID"] == self.name:
+                        answer = True
+                rsp["answer"]       = answer
+                self.s.sendall(_json.dumps(rsp) + '\n')
 
-                    rsp["inResponseTo"] = req["action"]
-                    rsp["id"]           = req["id"]
-                    rsp["services"]     = []
-                    self.s.sendall(_json.dumps(rsp) + '\n')
+            elif req["action"] == Action.SERVICES:
+                # self.logger.debug("ACTION: " + Action.SERVICES)
 
-                elif value == Action.AGENT_FOR_SERVICE:
-                    # self.logger.debug("ACTION: " + Action.AGENT_FOR_SERVICE)
+                rsp["inResponseTo"] = req["action"]
+                rsp["id"]           = str(req["id"])
+                rsp["services"]     = []
+                self.s.sendall(_json.dumps(rsp) + '\n')
 
-                    rsp["inResponseTo"] = req["action"]
-                    rsp["id"]           = req["id"]
-                    rsp["agentID"]      = ""
-                    self.s.sendall(_json.dumps(rsp) + '\n')
+            elif req["action"] == Action.AGENT_FOR_SERVICE:
+                # self.logger.debug("ACTION: " + Action.AGENT_FOR_SERVICE)
 
-                elif value == Action.AGENTS_FOR_SERVICE:
-                    # self.logger.debug("ACTION: " + Action.AGENTS_FOR_SERVICE)
+                rsp["inResponseTo"] = req["action"]
+                rsp["id"]           = str(req["id"])
+                rsp["agentID"]      = ""
+                self.s.sendall(_json.dumps(rsp) + '\n')
 
-                    rsp["inResponseTo"] = req["action"]
-                    rsp["id"]           = req["id"]
-                    rsp["agentIDs"]     = []
-                    self.s.sendall(_json.dumps(rsp) + '\n')
+            elif req["action"] == Action.AGENTS_FOR_SERVICE:
+                # self.logger.debug("ACTION: " + Action.AGENTS_FOR_SERVICE)
 
-                elif value == Action.SEND:
-                    # self.logger.debug("ACTION: " + Action.SEND)
+                rsp["inResponseTo"] = req["action"]
+                rsp["id"]           = str(req["id"])
+                rsp["agentIDs"]     = []
+                self.s.sendall(_json.dumps(rsp) + '\n')
 
-                    # add message to queue only if:
-                    # 1. if the recipient is same as gateway's name or
-                    # 2. the message is for a topic in the subscribers list
-                    try:
-                        msg = req["message"]
-                        if msg["recipient"] == self.name:
+            elif req["action"] == Action.SEND:
+                # self.logger.debug("ACTION: " + Action.SEND)
+
+                # add message to queue only if:
+                # 1. if the recipient is same as gateway's name or
+                # 2. the message is for a topic in the subscribers list
+                try:
+                    msg = req["message"]
+                    if msg["recipient"] == self.name:
+                        q.append(msg)
+                        self.cv.acquire();
+                        self.cv.notify();
+                        self.cv.release();
+
+                    if self.is_topic(msg["recipient"]):
+                        if self.subscribers.count(msg["recipient"].replace("#","")):
                             q.append(msg)
                             self.cv.acquire();
                             self.cv.notify();
                             self.cv.release();
 
-                        if self.is_topic(msg["recipient"]):
-                            if self.subscribers.count(msg["recipient"].replace("#","")):
-                                q.append(msg)
-                                self.cv.acquire();
-                                self.cv.notify();
-                                self.cv.release();
+                except Exception, e:
+                    self.logger.critical("Exception: Error adding to queue - " + str(e))
 
-                    except Exception, e:
-                        self.logger.critical("Exception: Error adding to queue - " + str(e))
+            elif value == Action.SHUTDOWN:
+                self.logger.debug("ACTION: " + Action.SHUTDOWN)
+                return None
 
-                elif value == Action.SHUTDOWN:
-                    self.logger.debug("ACTION: " + Action.SHUTDOWN)
-                    return None
-
-                else:
-                    self.logger.warning("Invalid message, discarding")
-
+            else:
+                self.logger.warning("Invalid message, discarding")
+        else:
+            if "id" in req :
+                if req['id'] in self.pending :
+                    tup = self.pending[req["id"]]
+                    self.pending[req["id"]] = (tup[0],req)
+                    tup[0].set()
         return True
 
     def __recv_proc(self, q, subscribers):
@@ -199,8 +206,8 @@ class Gateway:
                     if parenthesis_count == 0:
                         name = self.s.getpeername()
                         self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg)
+                        # Parse and dispatch incoming messages
                         msg = self.parse_incoming(rmsg, q)
-
                         if msg == None:
                             break
 
@@ -366,11 +373,9 @@ class Gateway:
                 self.subscribers.append(new_topic.name)
             else:
                 # check whether this topic is already subscribed to
-                #TODO: use list function
-                for tp in self.subscribers:
-                    if new_topic.name == tp:
-                        self.logger.critical("Error: Already subscribed to topic")
-                        return
+                if new_topic.name in self.subscribers:
+                    self.logger.critical("Error: Already subscribed to topic")
+                    return
                 self.subscribers.append(new_topic.name)
         else:
             self.logger.critical("Invalid AgentID")
@@ -394,36 +399,50 @@ class Gateway:
             self.logger.critical("Invalid AgentID")
 
 
-    def agentForService(self, service):
+    def agentForService(self, service, timeout=1000):
         """ Finds an agent that provides a named service. If multiple agents are registered
             to provide a given service, any of the agents' id may be returned.
         """
+        req_id = _uuid.uuid4()
         j_dict = dict()
         j_dict["action"] = Action.AGENT_FOR_SERVICE
-        j_dict["id"] = str(_uuid.uuid4())
+        j_dict["id"] = str(req_id)
         if isinstance(service, str):
             j_dict["service"] = service
         else:
             j_dict["service"] = service.__class__.__name__+"."+str(service)
         self.s.sendall(_json.dumps(j_dict) + '\n')
 
-        _time.sleep(5)
+        res_event = _td.Event()
+        self.pending[req_id] = (res_event,None)
+        ret = res_event.wait(timeout)
+        if not ret:
+            return None
+        else:
+            tup = self.pending.pop(req_id)
+            return tup[1]["agentID"] if "agentID" in tup[1] else None
 
-        #TODO: Get the response from queue and return it
-
-
-    def agentsForService(self, service):
+    def agentsForService(self, service, timeout=1000):
         """Finds all agents that provides a named service."""
+
+        req_id = _uuid.uuid4()
         j_dict = dict()
         j_dict["action"] = Action.AGENTS_FOR_SERVICE
-        j_dict["id"] = str(_uuid.uuid4())
+        j_dict["id"] = str(req_id)
         if isinstance(service, str):
             j_dict["service"] = service
         else:
             j_dict["service"] = service.__class__.__name__+"."+str(service)
         self.s.sendall(_json.dumps(j_dict) + '\n')
 
-        #TODO: Get the response from queue and return it
+        res_event = _td.Event()
+        self.pending[req_id] = (res_event,None)
+        ret = res_event.wait(timeout)
+        if not ret:
+            return None
+        else:
+            tup = self.pending.pop(req_id)
+            return tup[1]["agentIDs"] if "agentIDs" in tup[1] else None
 
     def to_json(self, inst):
         """Convert the object attributes to a dict."""
