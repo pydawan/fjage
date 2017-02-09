@@ -50,6 +50,7 @@ class Gateway:
         relay
     """
 
+    DEFAULT_TIMEOUT = 1000;
     NON_BLOCKING = 0;
     BLOCKING = -1
 
@@ -85,7 +86,6 @@ class Gateway:
             self.cv = _td.Condition();
             self.recv.daemon = True
             self.recv.start()
-            #TODO: This has to be a blocking call with timeout
             if self.is_duplicate():
                 self.logger.critical("Duplicate Gateway found. Shutting down.");
                 self.s.close
@@ -509,14 +509,22 @@ class Gateway:
         return inst
 
     def is_duplicate(self):
-        rsp = dict()
-        rsp["action"]   = Action.CONTAINS_AGENT
-        rsp["id"]       = str(_uuid.uuid4())
-        rsp["agentID"]  = self.name
-        self.s.sendall(_json.dumps(rsp) + '\n')
+        req_id = _uuid.uuid4()
+        req = dict()
+        req["action"]   = Action.CONTAINS_AGENT
+        req["id"]       = str(req_id)
+        req["agentID"]  = self.name
+        self.s.sendall(_json.dumps(req) + '\n')
 
-        #TODO: Get the response from queue and return "answer" field
-        return False
+        res_event = _td.Event()
+        self.pending[req_id] = (res_event,None)
+        ret = res_event.wait(self.DEFAULT_TIMEOUT)
+        if not ret:
+            return True
+        else:
+            tup = self.pending.pop(req_id)
+            print tup
+            return tup[1]["answer"] if "answer" in tup[1] else True
 
     def is_topic(self, recipient):
         if recipient[0] == "#":
