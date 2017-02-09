@@ -39,7 +39,7 @@ public class SlaveContainer extends RemoteContainer {
 
   /**
    * Creates a slave container.
-   * 
+   *
    * @param platform platform on which the container runs.
    * @param hostname hostname of the master container.
    * @param port port on which the master container's TCP server runs.
@@ -50,10 +50,10 @@ public class SlaveContainer extends RemoteContainer {
     this.port = port;
     connectToMaster();
   }
-  
+
   /**
    * Creates a named slave container.
-   * 
+   *
    * @param platform platform on which the container runs.
    * @param name name of the container.
    * @param hostname hostname of the master container.

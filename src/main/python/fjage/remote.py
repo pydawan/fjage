@@ -228,17 +228,16 @@ class Gateway:
         j_dict["action"] = Action.SHUTDOWN
         self.s.sendall(_json.dumps(j_dict) + '\n')
 
-    def send(self, msg):
+    def send(self, msg, relay=True):
         """Sends a message to the recipient indicated in the message. The recipient may be an agent or a topic."""
 
-        #TODO: Verify the logic (compare to send in SlaveContainer.java)
         if not msg.recipient:
             return False
 
         j_dict = dict()
         m_dict = dict()
         j_dict["action"] = Action.SEND
-        j_dict["relay"] = True
+        j_dict["relay"] = relay
         msg.sender = self.name
         m_dict = self.to_json(msg)
         m_dict["msgType"] = "org.arl."+msg.__module__+"."+msg.__class__.__name__
@@ -252,6 +251,7 @@ class Gateway:
 
         name = self.s.getpeername()
         self.logger.debug(str(name[0])+ ":" + str(name[1]) + " >>> "+json_str)
+
         self.s.sendall(json_str + '\n')
 
         return True
