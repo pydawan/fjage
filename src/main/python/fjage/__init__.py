@@ -14,6 +14,8 @@ TODO:
 import uuid as _uuid
 import logging
 
+version=1.0
+
 class AgentID:
     """An identifier for an agent or a topic."""
     def __init__(self, name, is_topic = False):
@@ -55,14 +57,12 @@ class Message(object):
             return p;
         return p + ": " + str(self.__class__.__name__);
 
-
 class GenericMessage(Message):
     """A message class that can convey generic messages represented by key-value pairs."""
     def __init__(self, **kwargs):
         super(GenericMessage, self).__init__()
         self.map = dict()
         self.__dict__.update(kwargs)
-
 
 def initLogging():
     # create logger

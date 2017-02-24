@@ -74,7 +74,7 @@ class Gateway:
                     self.name = name
                 except Exception, e:
                     self.self.logger.critical("Exception: Cannot assign name to gateway: " + str(e))
-                    _sys.exit(0)
+                    raise
 
             self.q = list()
             self.subscribers = list()
@@ -89,11 +89,11 @@ class Gateway:
             if self.is_duplicate():
                 self.logger.critical("Duplicate Gateway found. Shutting down.");
                 self.s.close
-                _sys.exit(0)
+                raise Exception('DuplicateGatewayException');
 
         except Exception, e:
             self.logger.critical("Exception: " + str(e))
-            _sys.exit(0)
+            raise
 
     def parse_incoming(self, rmsg, q):
         """Parse incoming messages and respond to them"""
