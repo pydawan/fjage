@@ -100,8 +100,8 @@ class Gateway:
             self.logger.critical("Exception: " + str(e))
             raise
 
-    def parse_incoming(self, rmsg, q):
-        """Parse incoming messages and respond to them"""
+    def parse_dispatch(self, rmsg, q):
+        """Parse incoming messages and respond to them or dispatch them."""
 
         req = _json.loads(rmsg)
         rsp = dict()
@@ -207,7 +207,7 @@ class Gateway:
                     self.logger.critical("Exception: Socket Closed")
                 self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg)
                 # Parse and dispatch incoming messages
-                self.parse_incoming(rmsg, q)
+                self.parse_dispatch(rmsg, q)
             except:
                 self.logger.critical("Exception: " + str(e))
                 pass
