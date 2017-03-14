@@ -79,16 +79,21 @@ class Gateway:
             self.q = list()
             self.subscribers = list()
             self.pending = dict()
-            self.s = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
-            self.logger.info("Connecting to "+str(hostname)+":"+str(port));
-            self.s.connect((hostname, port))
-            self.recv = _td.Thread(target=self.__recv_proc, args=(self.q, self.subscribers, ))
             self.cv = _td.Condition();
-            self.recv.daemon = True
-            self.recv.start()
+
+            self.socket = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
+            self.recv_thread = _td.Thread(target=self.__recv_proc, args=(self.q, self.subscribers, ))
+            self.recv_thread.daemon = True
+
+            self.logger.info("Connecting to "+str(hostname)+":"+str(port));
+            self.socket.connect((hostname, port));
+            self.socket_file = self.socket.makefile('r', 65536);
+
+            self.recv_thread.start()
+
             if self.is_duplicate():
                 self.logger.critical("Duplicate Gateway found. Shutting down.");
-                self.s.close
+                self.socket.close
                 raise Exception('DuplicateGatewayException');
 
         except Exception, e:
@@ -112,7 +117,7 @@ class Gateway:
                 rsp["inResponseTo"] = req["action"]
                 rsp["id"]           = str(req["id"])
                 rsp["agentIDs"]     = [self.name]
-                self.s.sendall(_json.dumps(rsp) + '\n')
+                self.socket.sendall(_json.dumps(rsp) + '\n')
 
             elif req["action"] == Action.CONTAINS_AGENT:
                 # self.logger.debug("ACTION: " + Action.CONTAINS_AGENT)
@@ -124,7 +129,7 @@ class Gateway:
                     if req["agentID"] == self.name:
                         answer = True
                 rsp["answer"]       = answer
-                self.s.sendall(_json.dumps(rsp) + '\n')
+                self.socket.sendall(_json.dumps(rsp) + '\n')
 
             elif req["action"] == Action.SERVICES:
                 # self.logger.debug("ACTION: " + Action.SERVICES)
@@ -132,7 +137,7 @@ class Gateway:
                 rsp["inResponseTo"] = req["action"]
                 rsp["id"]           = str(req["id"])
                 rsp["services"]     = []
-                self.s.sendall(_json.dumps(rsp) + '\n')
+                self.socket.sendall(_json.dumps(rsp) + '\n')
 
             elif req["action"] == Action.AGENT_FOR_SERVICE:
                 # self.logger.debug("ACTION: " + Action.AGENT_FOR_SERVICE)
@@ -140,7 +145,7 @@ class Gateway:
                 rsp["inResponseTo"] = req["action"]
                 rsp["id"]           = str(req["id"])
                 rsp["agentID"]      = ""
-                self.s.sendall(_json.dumps(rsp) + '\n')
+                self.socket.sendall(_json.dumps(rsp) + '\n')
 
             elif req["action"] == Action.AGENTS_FOR_SERVICE:
                 # self.logger.debug("ACTION: " + Action.AGENTS_FOR_SERVICE)
@@ -148,7 +153,7 @@ class Gateway:
                 rsp["inResponseTo"] = req["action"]
                 rsp["id"]           = str(req["id"])
                 rsp["agentIDs"]     = []
-                self.s.sendall(_json.dumps(rsp) + '\n')
+                self.socket.sendall(_json.dumps(rsp) + '\n')
 
             elif req["action"] == Action.SEND:
                 # self.logger.debug("ACTION: " + Action.SEND)
@@ -193,31 +198,23 @@ class Gateway:
 
         parenthesis_count = 0
         rmsg = ""
+        name = self.socket.getpeername();
 
         while True:
             try:
-                c = self.s.recv(1)
-                rmsg = rmsg + c
-
-                if c == '{':
-                    parenthesis_count += 1
-                if c == '}':
-                    parenthesis_count -= 1
-                    if parenthesis_count == 0:
-                        name = self.s.getpeername()
-                        self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg)
-                        # Parse and dispatch incoming messages
-                        msg = self.parse_incoming(rmsg, q)
-                        if msg == None:
-                            break
-
-                        rmsg = ""
+                rmsg = self.socket_file.readline();
+                if not rmsg:
+                    self.logger.critical("Exception: Socket Closed");
+                self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg);
+                # Parse and dispatch incoming messages
+                self.parse_incoming(rmsg, q);
             except:
+                self.logger.critical("Exception: " + str(e))
                 pass
 
     def __del__(self):
         try:
-            self.s.close
+            self.socket.close
         except Exception, e:
             self.logger.critical("Exception: " + str(e))
 
@@ -226,7 +223,7 @@ class Gateway:
 
         j_dict = dict()
         j_dict["action"] = Action.SHUTDOWN
-        self.s.sendall(_json.dumps(j_dict) + '\n')
+        self.socket.sendall(_json.dumps(j_dict) + '\n')
 
     def send(self, msg, relay=True):
         """Sends a message to the recipient indicated in the message. The recipient may be an agent or a topic."""
@@ -249,10 +246,10 @@ class Gateway:
 
         json_str = _json.dumps(j_dict)
 
-        name = self.s.getpeername()
+        name = self.socket.getpeername()
         self.logger.debug(str(name[0])+ ":" + str(name[1]) + " >>> "+json_str)
 
-        self.s.sendall(json_str + '\n')
+        self.socket.sendall(json_str + '\n')
 
         return True
 
@@ -304,7 +301,6 @@ class Gateway:
 
         if (rmsg == None and timeout != self.NON_BLOCKING):
             deadline = current_time_millis() + timeout
-
             while (rmsg == None and (timeout == self.BLOCKING or current_time_millis() < deadline)):
 
                 if timeout == self.BLOCKING:
@@ -398,7 +394,6 @@ class Gateway:
         else:
             self.logger.critical("Invalid AgentID")
 
-
     def agentForService(self, service, timeout=1000):
         """ Finds an agent that provides a named service. If multiple agents are registered
             to provide a given service, any of the agents' id may be returned.
@@ -411,7 +406,7 @@ class Gateway:
             j_dict["service"] = service
         else:
             j_dict["service"] = service.__class__.__name__+"."+str(service)
-        self.s.sendall(_json.dumps(j_dict) + '\n')
+        self.socket.sendall(_json.dumps(j_dict) + '\n')
 
         res_event = _td.Event()
         self.pending[req_id] = (res_event,None)
@@ -433,7 +428,7 @@ class Gateway:
             j_dict["service"] = service
         else:
             j_dict["service"] = service.__class__.__name__+"."+str(service)
-        self.s.sendall(_json.dumps(j_dict) + '\n')
+        self.socket.sendall(_json.dumps(j_dict) + '\n')
 
         res_event = _td.Event()
         self.pending[req_id] = (res_event,None)
@@ -514,7 +509,7 @@ class Gateway:
         req["action"]   = Action.CONTAINS_AGENT
         req["id"]       = str(req_id)
         req["agentID"]  = self.name
-        self.s.sendall(_json.dumps(req) + '\n')
+        self.socket.sendall(_json.dumps(req) + '\n')
 
         res_event = _td.Event()
         self.pending[req_id] = (res_event,None)
@@ -523,7 +518,6 @@ class Gateway:
             return True
         else:
             tup = self.pending.pop(req_id)
-            print tup
             return tup[1]["answer"] if "answer" in tup[1] else True
 
     def is_topic(self, recipient):
