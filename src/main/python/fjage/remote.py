@@ -50,8 +50,8 @@ class Gateway:
         relay
     """
 
-    DEFAULT_TIMEOUT = 1000;
-    NON_BLOCKING = 0;
+    DEFAULT_TIMEOUT = 1000
+    NON_BLOCKING = 0
     BLOCKING = -1
 
     def __init__(self, hostname, port, name = None):
@@ -79,22 +79,22 @@ class Gateway:
             self.q = list()
             self.subscribers = list()
             self.pending = dict()
-            self.cv = _td.Condition();
+            self.cv = _td.Condition()
 
             self.socket = _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM)
             self.recv_thread = _td.Thread(target=self.__recv_proc, args=(self.q, self.subscribers, ))
             self.recv_thread.daemon = True
 
-            self.logger.info("Connecting to "+str(hostname)+":"+str(port));
-            self.socket.connect((hostname, port));
-            self.socket_file = self.socket.makefile('r', 65536);
+            self.logger.info("Connecting to "+str(hostname)+":"+str(port))
+            self.socket.connect((hostname, port))
+            self.socket_file = self.socket.makefile('r', 65536)
 
             self.recv_thread.start()
 
             if self.is_duplicate():
-                self.logger.critical("Duplicate Gateway found. Shutting down.");
+                self.logger.critical("Duplicate Gateway found. Shutting down.")
                 self.socket.close
-                raise Exception('DuplicateGatewayException');
+                raise Exception('DuplicateGatewayException')
 
         except Exception, e:
             self.logger.critical("Exception: " + str(e))
@@ -165,16 +165,16 @@ class Gateway:
                     msg = req["message"]
                     if msg["recipient"] == self.name:
                         q.append(msg)
-                        self.cv.acquire();
-                        self.cv.notify();
-                        self.cv.release();
+                        self.cv.acquire()
+                        self.cv.notify()
+                        self.cv.release()
 
                     if self.is_topic(msg["recipient"]):
                         if self.subscribers.count(msg["recipient"].replace("#","")):
                             q.append(msg)
-                            self.cv.acquire();
-                            self.cv.notify();
-                            self.cv.release();
+                            self.cv.acquire()
+                            self.cv.notify()
+                            self.cv.release()
 
                 except Exception, e:
                     self.logger.critical("Exception: Error adding to queue - " + str(e))
@@ -198,16 +198,16 @@ class Gateway:
 
         parenthesis_count = 0
         rmsg = ""
-        name = self.socket.getpeername();
+        name = self.socket.getpeername()
 
         while True:
             try:
-                rmsg = self.socket_file.readline();
+                rmsg = self.socket_file.readline()
                 if not rmsg:
-                    self.logger.critical("Exception: Socket Closed");
-                self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg);
+                    self.logger.critical("Exception: Socket Closed")
+                self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg)
                 # Parse and dispatch incoming messages
-                self.parse_incoming(rmsg, q);
+                self.parse_incoming(rmsg, q)
             except:
                 self.logger.critical("Exception: " + str(e))
                 pass
@@ -304,14 +304,14 @@ class Gateway:
             while (rmsg == None and (timeout == self.BLOCKING or current_time_millis() < deadline)):
 
                 if timeout == self.BLOCKING:
-                    self.cv.acquire();
-                    self.cv.wait();
-                    self.cv.release();
+                    self.cv.acquire()
+                    self.cv.wait()
+                    self.cv.release()
                 elif timeout > 0:
-                    self.cv.acquire();
-                    t = deadline - current_time_millis();
-                    self.cv.wait(t/1000);
-                    self.cv.release();
+                    self.cv.acquire()
+                    t = deadline - current_time_millis()
+                    self.cv.wait(t/1000)
+                    self.cv.release()
 
                 rmsg = self._retrieveFromQueue(filter)
 
