@@ -91,7 +91,7 @@ class Gateway:
 
             self.recv_thread.start()
 
-            if self.is_duplicate():
+            if self._is_duplicate():
                 self.logger.critical("Duplicate Gateway found. Shutting down.")
                 self.socket.close
                 raise Exception('DuplicateGatewayException')
@@ -100,7 +100,7 @@ class Gateway:
             self.logger.critical("Exception: " + str(e))
             raise
 
-    def parse_dispatch(self, rmsg, q):
+    def _parse_dispatch(self, rmsg, q):
         """Parse incoming messages and respond to them or dispatch them."""
 
         req = _json.loads(rmsg)
@@ -169,7 +169,7 @@ class Gateway:
                         self.cv.notify()
                         self.cv.release()
 
-                    if self.is_topic(msg["recipient"]):
+                    if self._is_topic(msg["recipient"]):
                         if self.subscribers.count(msg["recipient"].replace("#","")):
                             q.append(msg)
                             self.cv.acquire()
@@ -207,7 +207,7 @@ class Gateway:
                     self.logger.critical("Exception: Socket Closed")
                 self.logger.debug(str(name[0])+ ":" + str(name[1])+" <<< "+rmsg)
                 # Parse and dispatch incoming messages
-                self.parse_dispatch(rmsg, q)
+                self._parse_dispatch(rmsg, q)
             except:
                 self.logger.critical("Exception: " + str(e))
                 pass
@@ -236,7 +236,7 @@ class Gateway:
         j_dict["action"] = Action.SEND
         j_dict["relay"] = relay
         msg.sender = self.name
-        m_dict = self.to_json(msg)
+        m_dict = self._to_json(msg)
         m_dict["msgType"] = "org.arl."+msg.__module__+"."+msg.__class__.__name__
         j_dict["message"] = m_dict
 
@@ -319,7 +319,7 @@ class Gateway:
             return None
 
         try:
-            rsp = self.from_json(rmsg)
+            rsp = self._from_json(rmsg)
 
             found_map = False
 
@@ -439,7 +439,7 @@ class Gateway:
             tup = self.pending.pop(req_id)
             return tup[1]["agentIDs"] if "agentIDs" in tup[1] else None
 
-    def to_json(self, inst):
+    def _to_json(self, inst):
         """Convert the object attributes to a dict."""
         dt = inst.__dict__.copy()
 
@@ -457,7 +457,7 @@ class Gateway:
             #TODO: Any attribute ending with "_", remove it
         return dt
 
-    def from_json(self, dt):
+    def _from_json(self, dt):
         """If possible, do class loading, else return the dict."""
 
         # for testing various incoming message types
@@ -503,7 +503,7 @@ class Gateway:
             inst = dt
         return inst
 
-    def is_duplicate(self):
+    def _is_duplicate(self):
         req_id = _uuid.uuid4()
         req = dict()
         req["action"]   = Action.CONTAINS_AGENT
@@ -520,7 +520,7 @@ class Gateway:
             tup = self.pending.pop(req_id)
             return tup[1]["answer"] if "answer" in tup[1] else True
 
-    def is_topic(self, recipient):
+    def _is_topic(self, recipient):
         if recipient[0] == "#":
             return True
         return False
