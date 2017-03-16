@@ -48,6 +48,7 @@ Here is a JSON object which exemplifies format of the protocol.
 There are some identifiers that are used throughout the JSON Object.
 
 - `AgentID` : And AgentID is a unique String identifier given to each fjage agent running containers.
+ 
 - `id` and `msgID` : Universally Unique Identifiers ([UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier)) stored a a String to tag and distinguish JSON objects and messages in fjåge.
 
 ## Actions
@@ -56,13 +57,13 @@ Each JSON object is defined to execute a certain action when it reaches the targ
 
 These 7 actions are supported in the fjåge's JSON protocol are `agents, containsAgent, services, agentForService, agentsForService, send, shutdown`, and the `action` top level attribute is used in the JSON object to define the action the container is to perform on receiving the object.
 
-`agents` - Request for a list of all agents running on the target container.
-`containsAgent` - Request to check if a specific container has a agent with a given AgentID running.
-`services` - Request for a list of all services running on the target container.
-`agentForService` - Request for AgentID of an agent that is providing a specific service.
-`agentForService` - Request for AgentID of all agents that is providing a specific service.
-`send` - Request to send a payload to the target container.
-`shutdown` - Request to shutdown the target container.
+- `agents` - Request for a list of all agents running on the target container.
+- `containsAgent` - Request to check if a specific container has a agent with a given AgentID running.
+- `services` - Request for a list of all services running on the target container.
+- `agentForService` - Request for AgentID of an agent that is providing a specific service.
+- `agentForService` - Request for AgentID of all agents that is providing a specific service.
+- `send` - Request to send a payload to the target container.
+- `shutdown` - Request to shutdown the target container.
 
 ## Responses
 
@@ -103,28 +104,33 @@ JSON object with `"action" : "send"` have a payload of type Object contained in 
 The attributes contained within each message are dependent on the message type and it's function. However, all messages share some common attributes.
 
 `msgID` : **String** (mandatory) - A [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) assigned to to each message.
+
 `perf` : **String** (mandatory) - Performative. Defines the purpose of the message. Valid performatives are : `REQUEST, AGREE, REFUSE, FAILURE, INFORM, CONFIRM, DISCONFIRM, QUERY_IF, NOT_UNDERSTOOD, CFP, PROPOSE, CANCEL`.
+
 `recipient` : **String** (mandatory) - An AgentID of the fjåge agent this message is being addressed to.
+
 `sender` : **String** (mandatory) - An AgentID on the fjåge this message is being sent by.
+
 `inReplyTo` : **String** (optional) - A UUID. Included in a reply to another object to indicate that this object is a reply to a object with this `id`.
+
 `msgType` : **String** (optional) - A string identifier that identifies the type of the message. This is usually a fully qualified Java class name of the class of that type of message.
 
-##Performatives
+## Performatives
 
 Performative is an action represented by a message. These are performatives supported by fjåge.
 
-`AGREE` - Agree to performing the requested action.
-`CANCEL` - Cancel pending request.
-`CFP` - Call for proposal.
-`CONFIRM` - Confirm that the answer to a query is true.
-`DISCONFIRM` - Confirm that the answer to a query is false.
-`FAILURE` - Notification of failure to perform a requested or agreed action.
-`INFORM` - Notification of an event.
-`NOT_UNDERSTOOD` - Notification that a message was not understood.
-`PROPOSE` - Response for CFP.
-`QUERY_IF` - Query if some statement is true or false.
-`REFUSE` - Refuse to perform the requested action.
-`REQUEST` - Request an action to be performed.
+- `AGREE` - Agree to performing the requested action.
+- `CANCEL` - Cancel pending request.
+- `CFP` - Call for proposal.
+- `CONFIRM` - Confirm that the answer to a query is true.
+- `DISCONFIRM` - Confirm that the answer to a query is false.
+- `FAILURE` - Notification of failure to perform a requested or agreed action.
+- `INFORM` - Notification of an event.
+- `NOT_UNDERSTOOD` - Notification that a message was not understood.
+- `PROPOSE` - Response for CFP.
+- `QUERY_IF` - Query if some statement is true or false.
+- `REFUSE` - Refuse to perform the requested action.
+- `REQUEST` - Request an action to be performed.
 
 Examples
 --------
