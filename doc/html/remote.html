@@ -1,34 +1,32 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Distributed Agents &mdash; fjåge 1.4 documentation</title>
-    
+    <title>Distributed Agents &#8212; fjåge 1.4.1 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4',
+        VERSION:     '1.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="fjåge 1.4 documentation" href="index.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="The Shell Agent" href="shell.html" />
     <link rel="prev" title="Directory Services" href="services.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -38,7 +36,7 @@
         <li class="right" >
           <a href="services.html" title="Directory Services"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -89,7 +87,7 @@
 <h2>Master and slave containers<a class="headerlink" href="#master-and-slave-containers" title="Permalink to this headline">¶</a></h2>
 <p>Once we have developed our agents, it is easy to deploy them on multiple nodes as necessary. To do so, we require one <a class="reference external" href="http://org-arl.github.com/fjage/javadoc/index.html?org/arl/fjage/json/MasterContainer.html">MasterContainer</a> in our application, and any number of <a class="reference external" href="http://org-arl.github.com/fjage/javadoc/index.html?org/arl/fjage/json/SlaveContainer.html">SlaveContainer</a>. The master container must be started first, and the slave containers connect to it.</p>
 <p>To start a master container, we simply replace <cite>Container</cite> with <cite>MasterContainer</cite> in the <cite>initrc.groovy</cite>:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
 <span class="kn">import</span> <span class="nn">org.arl.fjage.remote.*</span>
 
 <span class="n">platform</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RealTimePlatform</span><span class="o">()</span>
@@ -101,7 +99,7 @@
 </div>
 <p>Specifying the <cite>name</cite> for the master container is optional, but recommended. Any <cite>String</cite> can be used as the container name. An additional parameter <cite>port</cite> may be specified while constructing the <cite>MasterContainer</cite>, if desired. In the absence of this parameter, the TCP port number is automatically chosen.</p>
 <p>To start slave containers, we need to specify the hostname and TCP port of the master container:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
 <span class="kn">import</span> <span class="nn">org.arl.fjage.remote.*</span>
 
 <span class="n">platform</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RealTimePlatform</span><span class="o">()</span>
@@ -110,19 +108,19 @@
 <span class="n">platform</span><span class="o">.</span><span class="na">start</span><span class="o">()</span>
 </pre></div>
 </div>
-<p>That&#8217;s it! We can deploy agents on any of the containers in the system, and they can interact with agents from other containers transparently.</p>
+<p>That’s it! We can deploy agents on any of the containers in the system, and they can interact with agents from other containers transparently.</p>
 </div>
 <div class="section" id="remote-console">
 <h2>Remote console<a class="headerlink" href="#remote-console" title="Permalink to this headline">¶</a></h2>
 <p>It is often useful to connect a console shell to a running fjåge application to monitor, interrogate or modify it. To do this, we ensure that the application is running in a master container (and possible some slave containers). We then create a <cite>rconsole.sh</cite>:</p>
-<div class="highlight-sh"><div class="highlight"><pre><span class="c">#!/bin/sh</span>
+<div class="highlight-sh"><div class="highlight"><pre><span></span><span class="ch">#!/bin/sh</span>
 
 <span class="nv">CLASSPATH</span><span class="o">=</span><span class="sb">`</span>find build/libs -name *.jar -exec /bin/echo -n :<span class="s1">&#39;{}&#39;</span> <span class="se">\;</span><span class="sb">`</span>
 java -cp <span class="s2">&quot;</span><span class="nv">$CLASSPATH</span><span class="s2">&quot;</span> -Dhostname<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span> -Dport<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$2</span><span class="s2">&quot;</span> org.arl.fjage.shell.GroovyBoot etc/initrc-rconsole.groovy
 </pre></div>
 </div>
 <p>and <cite>etc/initrc-rconsole.groovy</cite>:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
 <span class="kn">import</span> <span class="nn">org.arl.fjage.remote.*</span>
 <span class="kn">import</span> <span class="nn">org.arl.fjage.shell.*</span>
 
@@ -143,14 +141,14 @@ java -cp <span class="s2">&quot;</span><span class="nv">$CLASSPATH</span><span c
 </pre></div>
 </div>
 <p>The shell script passes the hostname and TCP port specified on the command line to the initialization Groovy script, that connects to the master container and offers a local console shell for the user to interact. Assuming you have a fjåge application running locally on port 5081, you can connect to it:</p>
-<div class="highlight-sh"><div class="highlight"><pre>./rconsole.sh localhost 5081
+<div class="highlight-sh"><div class="highlight"><pre><span></span>./rconsole.sh localhost <span class="m">5081</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="interacting-with-agents-using-a-gateway">
 <h2>Interacting with agents using a Gateway<a class="headerlink" href="#interacting-with-agents-using-a-gateway" title="Permalink to this headline">¶</a></h2>
 <p>Only agents may access messaging and related functionality provided by fjåge. For example, non-agent Java or Groovy threads cannot send messages to, or receive messages. To aid interaction of such threads with agents, fjåge provides a <a class="reference external" href="http://org-arl.github.com/fjage/javadoc/index.html?org/arl/fjage/json/Gateway.html">Gateway</a> class. This class provides agent-like functionality to non-agent threads by creating a proxy agent in a slave container that has access to this functionality. Using the <cite>Gateway</cite> is fairly simple:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="n">Gateway</span> <span class="n">gw</span> <span class="o">=</span> <span class="n">Gateway</span><span class="o">(</span><span class="n">hostname</span><span class="o">,</span> <span class="n">port</span><span class="o">)</span>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="n">Gateway</span> <span class="n">gw</span> <span class="o">=</span> <span class="n">Gateway</span><span class="o">(</span><span class="n">hostname</span><span class="o">,</span> <span class="n">port</span><span class="o">)</span>
 <span class="kt">def</span> <span class="n">weatherStation</span> <span class="o">=</span> <span class="n">gw</span><span class="o">.</span><span class="na">agentForService</span> <span class="n">Services</span><span class="o">.</span><span class="na">WEATHER_FORECAST_SERVICE</span>
 <span class="kt">def</span> <span class="n">rsp</span> <span class="o">=</span> <span class="n">gw</span><span class="o">.</span><span class="na">request</span> <span class="k">new</span> <span class="n">WeatherForecastReq</span><span class="o">(</span><span class="nl">city:</span> <span class="s1">&#39;London&#39;</span><span class="o">,</span> <span class="nl">country:</span> <span class="s1">&#39;UK&#39;</span><span class="o">,</span> <span class="nl">recipient:</span> <span class="n">weatherStation</span><span class="o">)</span>
 <span class="n">println</span> <span class="s2">&quot;The lowest temperature today is ${rsp?rsp.minTemp:&#39;unknown&#39;}&quot;</span>
@@ -175,11 +173,11 @@ java -cp <span class="s2">&quot;</span><span class="nv">$CLASSPATH</span><span c
         <li class="right" >
           <a href="services.html" title="Directory Services"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2013, Mandar Chitre.
+        &#169; Copyright 2013, Mandar Chitre.
     </div>
   </body>
 </html>

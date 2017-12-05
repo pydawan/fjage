@@ -1,34 +1,32 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Simulation &mdash; fjåge 1.4 documentation</title>
-    
+    <title>Simulation &#8212; fjåge 1.4.1 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4',
+        VERSION:     '1.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="fjåge 1.4 documentation" href="index.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Frequently Asked Questions" href="faq.html" />
     <link rel="prev" title="The Shell Agent" href="shell.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -38,7 +36,7 @@
         <li class="right" >
           <a href="shell.html" title="The Shell Agent"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -86,14 +84,14 @@
 <div class="section" id="discrete-event-simulation">
 <h2>Discrete Event Simulation<a class="headerlink" href="#discrete-event-simulation" title="Permalink to this headline">¶</a></h2>
 <p>When used in the <a class="reference external" href="http://en.wikipedia.org/wiki/Discrete_event_simulation">Discrete event simulation</a> mode, fjåge allows agents to be tested rapidly through the notion of <em>virtual time</em>. The passage of virtual time is simulated such that computation and processing does not take any virtual time, while scheduling requests are met accurately in virtual time. The virtual time advances in discrete steps such that the time when no agent is active is effectively skipped. This potentially allows for simulation of hours of virtual time within seconds.</p>
-<p>In order to use the discrete event simulation mode, a few conditions have to be met. The first two of these conditions are related to timing functions and were introduced in the &#8220;<a class="reference internal" href="introduction.html#intro"><span>Introduction</span></a>&#8221; chapter. The last condition is related to agents deployed in slave containers.</p>
+<p>In order to use the discrete event simulation mode, a few conditions have to be met. The first two of these conditions are related to timing functions and were introduced in the “<a class="reference internal" href="introduction.html#intro"><span class="std std-ref">Introduction</span></a>” chapter. The last condition is related to agents deployed in slave containers.</p>
 <ol class="arabic simple">
 <li>Agents must not use any system timing functions directly. Rather than use <cite>System.currentTimeMillis()</cite> or <cite>System.nanoTime()</cite>, the agents should use <cite>Agent.currentTimeMillis()</cite> and <cite>Agent.nanoTime()</cite>.</li>
 <li>Agents must not use any system scheduling functions directly. Rather than use <cite>Thread.sleep()</cite>, the agent should use <cite>Agent.delay()</cite>.</li>
 <li>All agents must be deployed in a single container for testing. Distributed containers (master or slave) are currently not supported by the discrete event simulator.</li>
 </ol>
 <p>To run the agents in the discrete event simulation mode, the use of the <cite>RealTimePlatform</cite> in <cite>etc/initrc.groovy</cite> is replaced by <cite>DiscreteEventSimulator</cite>:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
 
 <span class="n">platform</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DiscreteEventSimulator</span><span class="o">()</span>
 <span class="n">container</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Container</span><span class="o">(</span><span class="n">platform</span><span class="o">)</span>
@@ -120,11 +118,11 @@
         <li class="right" >
           <a href="shell.html" title="The Shell Agent"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2013, Mandar Chitre.
+        &#169; Copyright 2013, Mandar Chitre.
     </div>
   </body>
 </html>

@@ -1,34 +1,32 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>The Shell Agent &mdash; fjåge 1.4 documentation</title>
-    
+    <title>The Shell Agent &#8212; fjåge 1.4.1 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4',
+        VERSION:     '1.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="fjåge 1.4 documentation" href="index.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Simulation" href="simulation.html" />
     <link rel="prev" title="Distributed Agents" href="remote.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
@@ -38,7 +36,7 @@
         <li class="right" >
           <a href="remote.html" title="Distributed Agents"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -85,11 +83,11 @@
             
   <div class="section" id="the-shell-agent">
 <h1>The Shell Agent<a class="headerlink" href="#the-shell-agent" title="Permalink to this headline">¶</a></h1>
-<p>We have already used the console shell provided by fjåge many times. This shell is implemented by the <cite>ShellAgent</cite> class as we have seen before in the <cite>initrc.groovy</cite> scripts. Let&#8217;s take a slightly deeper look at the shell agent in this chapter.</p>
+<p>We have already used the console shell provided by fjåge many times. This shell is implemented by the <cite>ShellAgent</cite> class as we have seen before in the <cite>initrc.groovy</cite> scripts. Let’s take a slightly deeper look at the shell agent in this chapter.</p>
 <div class="section" id="shell-commands">
 <h2>Shell commands<a class="headerlink" href="#shell-commands" title="Permalink to this headline">¶</a></h2>
 <p>The default shell provided by fjåge is a Groovy shell, and can execute any valid Groovy code. A few standard commands, variables and closures are made available. Just typing <cite>help</cite> will provide a list of commands that are available:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="go">bash$ ./fjage.sh</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">bash$ ./fjage.sh</span>
 <span class="gp">&gt;</span> <span class="nb">help</span>
 <span class="go">help [topic] - provide help on a specified topic</span>
 <span class="go">ps - list all the agents</span>
@@ -121,8 +119,8 @@
 </div>
 <div class="section" id="remote-shell-over-tcp-ip">
 <h2>Remote shell over TCP/IP<a class="headerlink" href="#remote-shell-over-tcp-ip" title="Permalink to this headline">¶</a></h2>
-<p>If we wanted to provide a remote shell that users could <cite>telnet</cite> into, rather than a console shell, we would replace <cite>ConsoleShell</cite> with a <cite>TcpShell</cite> and specify a TCP/IP port number that is to provide the interactive shell. Here&#8217;s what the resulting <cite>initrc.groovy</cite> would look like:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
+<p>If we wanted to provide a remote shell that users could <cite>telnet</cite> into, rather than a console shell, we would replace <cite>ConsoleShell</cite> with a <cite>TcpShell</cite> and specify a TCP/IP port number that is to provide the interactive shell. Here’s what the resulting <cite>initrc.groovy</cite> would look like:</p>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
 <span class="kn">import</span> <span class="nn">org.arl.fjage.shell.*</span>
 
 <span class="n">platform</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RealTimePlatform</span><span class="o">()</span>
@@ -134,7 +132,7 @@
 </pre></div>
 </div>
 <p>We could then access the shell using <cite>telnet</cite>:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="go">bash$ telnet localhost 8001</span>
+<div class="highlight-console"><div class="highlight"><pre><span></span><span class="go">bash$ telnet localhost 8001</span>
 <span class="go">Trying localhost...</span>
 <span class="go">Connected to localhost</span>
 <span class="go">Escape character is &#39;^]&#39;.</span>
@@ -147,7 +145,7 @@
 <div class="section" id="gui-shell-using-java-swing">
 <h2>GUI shell using Java Swing<a class="headerlink" href="#gui-shell-using-java-swing" title="Permalink to this headline">¶</a></h2>
 <p>Although the console shell is simple and lightweight, sometimes it is convenient to have a graphical shell with enhanced functionality. A Java Swing based GUI shell can be started in the <cite>initrc.groovy</cite> like this:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">org.arl.fjage.*</span>
 <span class="kn">import</span> <span class="nn">org.arl.fjage.shell.*</span>
 
 <span class="n">platform</span> <span class="o">=</span> <span class="k">new</span> <span class="n">RealTimePlatform</span><span class="o">()</span>
@@ -161,7 +159,7 @@
 <p>An option already exists in the default <cite>initrc.groovy</cite> to use the GUI shell. To invoke this, simply start fjåge using <cite>./fjage.sh -gui</cite>. A sample session using the GUI shell is shown below.</p>
 <img alt="fjåge SwingShell GUI" class="align-center" src="_images/gui.png" />
 <p>The GUI shell displays a separate list in which unsolicited notifications are displayed. Clicking on responses or unsolicited notifications allows closer examination of the messages in the details tab. The GUI can be customized from Groovy shell scripts. Menu items and custom tabbed panels can be added and managed using <cite>guiAddMenu</cite>, <cite>guiGetMenu</cite>, <cite>guiRemoveMenu</cite>, <cite>guiAddPanel</cite>, <cite>guiGetPanel</cite> and <cite>guiRemovePanel</cite> commands. Examples of how to use these are shown in the help available for each command. A following sample script adds a menu item and a tabbed panel to the GUI:</p>
-<div class="highlight-groovy"><div class="highlight"><pre><span class="k">if</span> <span class="o">(</span><span class="n">defined</span><span class="o">(</span><span class="s1">&#39;gui&#39;</span><span class="o">))</span> <span class="o">{</span>    <span class="c1">// only call GUI functions if in GUI shell</span>
+<div class="highlight-groovy"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="o">(</span><span class="n">defined</span><span class="o">(</span><span class="s1">&#39;gui&#39;</span><span class="o">))</span> <span class="o">{</span>    <span class="c1">// only call GUI functions if in GUI shell</span>
   <span class="n">guiAddMenu</span> <span class="s1">&#39;Sample&#39;</span><span class="o">,</span> <span class="s1">&#39;Do something&#39;</span><span class="o">,</span> <span class="o">{</span>
     <span class="n">println</span> <span class="s1">&#39;Just do it!&#39;</span>
   <span class="o">},</span> <span class="o">[</span><span class="nl">acc:</span> <span class="s1">&#39;meta D&#39;</span><span class="o">]</span>
@@ -169,7 +167,7 @@
 <span class="o">}</span>
 </pre></div>
 </div>
-<p>After executing this script, a new menu item is created. Once invoked by clicking or using the accelerator key <cite>meta-D</cite>, &#8216;do something&#8217; is displayed. The script also adds a blank JPanel in a tab called &#8216;Demo&#8217;.</p>
+<p>After executing this script, a new menu item is created. Once invoked by clicking or using the accelerator key <cite>meta-D</cite>, ‘do something’ is displayed. The script also adds a blank JPanel in a tab called ‘Demo’.</p>
 </div>
 </div>
 
@@ -188,11 +186,11 @@
         <li class="right" >
           <a href="remote.html" title="Distributed Agents"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2013, Mandar Chitre.
+        &#169; Copyright 2013, Mandar Chitre.
     </div>
   </body>
 </html>

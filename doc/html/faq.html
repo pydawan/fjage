@@ -1,40 +1,38 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Frequently Asked Questions &mdash; fjåge 1.4 documentation</title>
-    
+    <title>Frequently Asked Questions &#8212; fjåge 1.4.1 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.4',
+        VERSION:     '1.4.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
-    <link rel="top" title="fjåge 1.4 documentation" href="index.html" />
+    <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Simulation" href="simulation.html" /> 
   </head>
-  <body role="document">
+  <body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
           <a href="simulation.html" title="Simulation"
              accesskey="P">previous</a></li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
@@ -84,17 +82,17 @@
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Q:</th><td class="field-body">Why does <cite>add oneShotBehavior { ... }</cite> or <cite>addOneShotBehavior { ... }</cite> (or other behaviors) not work even though I have <cite>GroovyExtensions</cite> enabled?</td>
+<tr class="field-odd field"><th class="field-name">Q:</th><td class="field-body">Why does <cite>add oneShotBehavior { … }</cite> or <cite>addOneShotBehavior { … }</cite> (or other behaviors) not work even though I have <cite>GroovyExtensions</cite> enabled?</td>
 </tr>
-<tr class="field-even field"><th class="field-name">A:</th><td class="field-body">These two synaxes supported by <cite>GroovyExtensions</cite> have been removed since fjåge v1.2. Instead use the new Groovy syntax <cite>add new OneShotBehavior({ ... })</cite>. The similarity with the Java syntax avoids confusions caused due to previous Groovy syntax.</td>
+<tr class="field-even field"><th class="field-name">A:</th><td class="field-body">These two synaxes supported by <cite>GroovyExtensions</cite> have been removed since fjåge v1.2. Instead use the new Groovy syntax <cite>add new OneShotBehavior({ … })</cite>. The similarity with the Java syntax avoids confusions caused due to previous Groovy syntax.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Q:</th><td class="field-body">I just declared a variable in the shell using <cite>def x = ...</cite>, but I get a <cite>No such property</cite> error when I try accessing it!  Why?</td>
+<tr class="field-odd field"><th class="field-name">Q:</th><td class="field-body">I just declared a variable in the shell using <cite>def x = …</cite>, but I get a <cite>No such property</cite> error when I try accessing it!  Why?</td>
 </tr>
-<tr class="field-even field"><th class="field-name">A:</th><td class="field-body">Variables declared with types or using <cite>def</cite> are available during execution of the command, but not exported to the variable binding of the shell. To declare a new variable in the binding, it should be declared without a type definition (e.g. <cite>x = ...</cite>).</td>
+<tr class="field-even field"><th class="field-name">A:</th><td class="field-body">Variables declared with types or using <cite>def</cite> are available during execution of the command, but not exported to the variable binding of the shell. To declare a new variable in the binding, it should be declared without a type definition (e.g. <cite>x = …</cite>).</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Q:</th><td class="field-body">What is the difference between <cite>import</cite> and <cite>shellImport</cite>?</td>
 </tr>
-<tr class="field-even field"><th class="field-name">A:</th><td class="field-body">In a Groovy script, <cite>import</cite> is used in the same sense as Java or Groovy, to import a package or class.  The imports are only active during the execution of the script.  <cite>shellImport</cite> is used to add an import to the shell, so that import is in force in the shell even after the script has terminated.  At the shell prompt, <cite>import</cite> and <cite>shellImport</cite> can be used interchangeably (with a slightly different syntax &#8211; see <cite>help shellImport</cite> for more information).</td>
+<tr class="field-even field"><th class="field-name">A:</th><td class="field-body">In a Groovy script, <cite>import</cite> is used in the same sense as Java or Groovy, to import a package or class.  The imports are only active during the execution of the script.  <cite>shellImport</cite> is used to add an import to the shell, so that import is in force in the shell even after the script has terminated.  At the shell prompt, <cite>import</cite> and <cite>shellImport</cite> can be used interchangeably (with a slightly different syntax – see <cite>help shellImport</cite> for more information).</td>
 </tr>
 </tbody>
 </table>
@@ -139,11 +137,11 @@
         <li class="right" style="margin-right: 10px">
           <a href="simulation.html" title="Simulation"
              >previous</a></li>
-        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4 documentation</a> &raquo;</li> 
+        <li class="nav-item nav-item-0"><a href="index.html">fjåge 1.4.1 documentation</a> &#187;</li> 
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &copy; Copyright 2013, Mandar Chitre.
+        &#169; Copyright 2013, Mandar Chitre.
     </div>
   </body>
 </html>
