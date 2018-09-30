@@ -11,6 +11,8 @@ for full license details.
 package org.arl.fjage.shell;
 
 import java.util.*;
+
+import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.util.log.*;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.*;
@@ -41,6 +43,7 @@ public class WebServer {
       @Override public void info(String msg, Throwable thrown)  { }
       @Override public void setDebugEnabled(boolean enabled)    { }
       @Override public void debug(String msg, Object... args)   { }
+      @Override public void debug(String msg, long value)       { }
       @Override public void debug(Throwable thrown)             { }
       @Override public void debug(String msg, Throwable thrown) { }
       @Override public void ignore(Throwable ignored)           { }
@@ -103,7 +106,7 @@ public class WebServer {
     if (started) return;
     try {
       server.start();
-      port = server.getConnectors()[0].getLocalPort();
+      port = ((NetworkConnector)server.getConnectors()[0]).getLocalPort();
       log.info("Started web server on port "+port);
       started = true;
     } catch (Exception ex) {

@@ -149,7 +149,7 @@ class ConnectionHandler extends Thread {
     try {
       out.writeBytes(s+"\n");
       log.fine(name+" >>> "+s);
-      while (com != null && com.bytesAwaitingWrite​() > 0) {
+      while (com != null && com.bytesAwaitingWrite() > 0) {
         try {
           Thread.sleep(100);
         } catch (InterruptedException ex) {
@@ -224,7 +224,7 @@ class ConnectionHandler extends Thread {
           respond(rq, container.getLocalAgents());
           break;
         case CONTAINS_AGENT:
-          respond(rq, rq.agentID != null ? container.containsAgent(rq.agentID) : false);
+          respond(rq, rq.agentID != null && container.containsAgent(rq.agentID));
           break;
         case SERVICES:
           respond(rq, container.getLocalServices());
