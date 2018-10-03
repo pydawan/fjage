@@ -10,11 +10,22 @@ for full license details.
 
 package org.arl.fjage.remote;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import org.arl.fjage.*;
 import com.fazecast.jSerialComm.SerialPort;
+import org.arl.fjage.AgentID;
+import org.arl.fjage.FjageError;
+import org.arl.fjage.Message;
+import org.arl.fjage.Platform;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WebSocketAdapter;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
+
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.*;
 
 /**
  * Master container supporting multiple remote slave containers. Agents in linked
@@ -32,6 +43,7 @@ public class MasterContainer extends RemoteContainer {
 
   private ServerSocket listener;
   private List<ConnectionHandler> slaves = new ArrayList<ConnectionHandler>();
+  private List<Session> wsSlaves = new ArrayList<Session>();
   private boolean needsCleanup = false;
 
   ////////////// Constructors
@@ -178,9 +190,11 @@ public class MasterContainer extends RemoteContainer {
 
   @Override
   public boolean send(Message m, boolean relay) {
+    log.warning("send");
     if (!running) return false;
     AgentID aid = m.getRecipient();
     if (aid == null) return false;
+    log.warning("sending " + aid);
     if (super.send(m, false) && !aid.isTopic()) return true;
     if (!relay) return false;
     JsonMessage rq = new JsonMessage();
@@ -192,6 +206,16 @@ public class MasterContainer extends RemoteContainer {
     synchronized(slaves) {
       for (ConnectionHandler slave: slaves)
         slave.println(json);
+    }
+    synchronized(wsSlaves) {
+      for (Session wsSlave: wsSlaves){
+        try {
+          log.warning("slave " + json);
+          wsSlave.getRemote().sendString(json);
+        } catch (IOException ex) {
+          log.warning(ex.toString());
+        }
+      }
     }
     return true;
   }
@@ -379,6 +403,16 @@ public class MasterContainer extends RemoteContainer {
     t.start();
   }
 
+  private void openWebSocket(ServletContextHandler context) throws IOException {
+    context.addServlet(new ServletHolder(new WebSocketServlet() {
+      private static final long serialVersionUID = 1L;
+      @Override
+      public void configure(WebSocketServletFactory factory) {
+        factory.setCreator((req, resp) -> new WebSocketProxy());
+      }
+    }), "/ws");
+  }
+
   private void cleanupSlaves() {
     synchronized(slaves) {
       Iterator<ConnectionHandler> it = slaves.iterator();
@@ -388,6 +422,22 @@ public class MasterContainer extends RemoteContainer {
       }
     }
     needsCleanup = false;
+  }
+
+  private class WebSocketProxy extends WebSocketAdapter {
+    private ConnectionHandler t;
+    @Override
+    public void onWebSocketConnect(Session sess) {
+      t = new ConnectionHandler(sess, MasterContainer.this);
+      synchronized(wsSlaves) {
+        wsSlaves.add(sess);
+      }
+    }
+
+    @Override
+    public void onWebSocketText(String message) {
+      t.processInput(message);
+    }
   }
 
 }

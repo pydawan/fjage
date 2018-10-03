@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 import java.util.logging.Logger;
 import org.arl.fjage.*;
 import com.fazecast.jSerialComm.SerialPort;
+import org.eclipse.jetty.websocket.api.Session;
 
 /**
  * Handles a JSON/TCP connection with remote container.
@@ -26,6 +27,7 @@ class ConnectionHandler extends Thread {
   private final String ALIVE = "{}";
   private final String SIGN_OFF = "//";
 
+  private Session sess;
   private Socket sock;
   private SerialPort com;
   private DataOutputStream out;
@@ -51,6 +53,14 @@ class ConnectionHandler extends Thread {
     setName(name);
     com.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0, 0);
     alive = false;
+  }
+
+  public ConnectionHandler(Session sess, MasterContainer container) {
+    this.sock = null;
+    this.com = null;
+    this.sess = sess;
+    this.container = container;
+    name = sess.getRemoteAddress().toString();
   }
 
   @Override
@@ -145,9 +155,13 @@ class ConnectionHandler extends Thread {
   }
 
   synchronized void println(String s) {
-    if (out == null) return;
+    if (out == null && sess == null) return;
     try {
-      out.writeBytes(s+"\n");
+      if (out !=null) out.writeBytes(s+"\n");
+      if (sess!=null) {
+        log.warning("sending..");
+        sess.getRemote().sendString(s);
+      }
       log.fine(name+" >>> "+s);
       while (com != null && com.bytesAwaitingWrite() > 0) {
         try {
@@ -202,6 +216,33 @@ class ConnectionHandler extends Thread {
       // do nothing
     }
   }
+
+  public void processInput (String s){
+    ExecutorService pool = Executors.newSingleThreadExecutor();
+    log.fine(name+" <<< "+s);
+    try {
+      JsonMessage rq = JsonMessage.fromJson(s);
+      log.warning("act" + rq.action + "id" + rq.id);
+      if (rq.action == null) {
+        if (rq.id != null) {
+          // response to some request
+          Object obj = pending.get(rq.id);
+          if (obj != null) {
+            pending.put(rq.id, rq);
+            synchronized(obj) {
+              obj.notify();
+            }
+          }
+        }
+      } else {
+        // new request
+        pool.execute(new RemoteTask(rq));
+      }
+    } catch(Exception ex) {
+      log.warning("Bad JSON request: "+ex.toString());
+    }
+  }
+
 
   boolean isClosed() {
     return sock == null && com == null;
