@@ -403,7 +403,7 @@ public class MasterContainer extends RemoteContainer {
     t.start();
   }
 
-  private void openWebSocket(ServletContextHandler context) throws IOException {
+  private void openWebSocket(ServletContextHandler context) {
     context.addServlet(new ServletHolder(new WebSocketServlet() {
       private static final long serialVersionUID = 1L;
       @Override
