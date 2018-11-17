@@ -1,10 +1,13 @@
 .DS_Store
 .gradle
+
+*.o
+*.a
+*.pyc
+
 tmp
 logs
 build
 htdocs
-*.o
-*.a
 test_fjage
-*.pyc
+node_modules
