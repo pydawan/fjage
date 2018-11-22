@@ -2,6 +2,8 @@ import os
 import errno
 import uuid as _uuid
 import logging
+import json as _json
+import numpy
 
 
 class AgentID:
@@ -51,6 +53,38 @@ class Message(object):
         self.sender = None
         self.inReplyTo = None
         self.__dict__.update(kwargs)
+
+    # convert a message into a JSON string
+    # NOTE: we don't do any base64 encoding for TX as
+    #       we don't know what data type is intended
+    def _serialize(self):
+        clazz = self.__clazz__
+        m = self.__dict__
+        t = [key for key, value in self.__dict__.items() if key.startswith('__')]
+        for i in t:
+            m.pop(i)
+        for key, value in m.items():
+            if type(value) == numpy.ndarray:
+                m[key] = value.tolist()
+        data = _json.dumps(m, separators=(',', ':'))
+        return '{ "clazz": "' + clazz + '", "data": ' + data + ' }'
+
+    def _inflate(self, data):
+        for key, value in data.items():
+            self.__dict__[key] = data[key]
+
+    def _deserialize(self, obj):
+        if (type(obj) == str or isinstance(obj, str)):
+            obj = _json.loads(obj)
+        qclazz = obj['clazz']
+        clazz = qclazz.split('.')[-1]
+        try:
+            rv = clazz()
+        except:
+            rv = Message()
+        rv.__clazz__ = qclazz
+        rv._inflate(obj['data'])
+        return rv
 
     def __str__(self):
         p = self.perf if self.perf else "MESSAGE"

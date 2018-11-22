@@ -7,16 +7,59 @@ import socket as _socket
 import threading as _td
 import logging as _log
 import fjagepy
-import base64
-import struct
+import base64 as _base64
+import struct as _struct
 import numpy
 from collections import OrderedDict
 from fjagepy.org_arl_fjage import AgentID
 from fjagepy.org_arl_fjage import Message
 from fjagepy.org_arl_fjage import GenericMessage
+from fjagepy.org_arl_fjage import Performative
 
 
 def current_time_millis(): return int(round(_time.time() * 1000))
+
+# convert from base 64 to array
+
+
+def _b64toArray(base64, dtype, littleEndian=True):
+    s = _base64.b64decode(base64)
+
+    rv = []
+    if dtype == '[B':  # byte array
+        count = len(s) // _struct.calcsize('c')
+        rv = list(_struct.unpack('<' + '{0}c'.format(count) if littleEndian else '>' + '{0}c'.format(count), s))
+    elif dtype == '[S':  # short array
+        count = len(s) // _struct.calcsize('h')
+        rv = list(_struct.unpack('<' + '{0}h'.format(count) if littleEndian else '>' + '{0}h'.format(count), s))
+    elif dtype == '[I':  # integer array
+        count = len(s) // _struct.calcsize('i')
+        rv = list(_struct.unpack('<' + '{0}i'.format(count) if littleEndian else '>' + '{0}i'.format(count), s))
+    elif dtype == '[J':  # long array
+        count = len(s) // _struct.calcsize('l')
+        rv = list(_struct.unpack('<' + '{0}l'.format(count) if littleEndian else '>' + '{0}l'.format(count), s))
+    elif dtype == '[F':  # float array
+        count = len(s) // _struct.calcsize('f')
+        rv = list(_struct.unpack('<' + '{0}f'.format(count) if littleEndian else '>' + '{0}f'.format(count), s))
+    elif dtype == '[D':  # double array
+        count = len(s) // _struct.calcsize('d')
+        rv = list(_struct.unpack('<' + '{0}d'.format(count) if littleEndian else '>' + '{0}d'.format(count), s))
+    else:
+        return
+    return rv
+
+# base 64 JSON decoder
+
+
+def _decodeBase64(m):
+    for d in m.values():
+        if type(d) == dict and 'clazz' in d.keys():
+            clazz = d['clazz']
+            if clazz.startswith('[') and len(clazz) == 2 and 'data' in d.keys():
+                x = _b64toArray(d['data'], d['clazz'])
+                if x:
+                    d = x
+    return m
 
 
 class Action:
@@ -87,7 +130,7 @@ class Gateway:
     def _parse_dispatch(self, rmsg, q):
         """Parse incoming messages and respond to them or dispatch them."""
 
-        req = _json.loads(rmsg)
+        req = _json.loads(rmsg, object_hook=_decodeBase64)
         rsp = dict()
         if "id" in req:
             req['id'] = _uuid.UUID(req['id'])
@@ -207,24 +250,36 @@ class Gateway:
 
         if not msg.recipient:
             return False
-        j_dict = dict()
-        m_dict = OrderedDict()
-        d_dict = dict()
-        j_dict["action"] = Action.SEND
-        j_dict["relay"] = relay
         msg.sender = self.name
-        d_dict = self._to_json(msg)
-        module_ = msg.__module__
-        m_dict["clazz"] = module_.split('.')[-1].replace("_", ".") + "." + msg.__class__.__name__
-        m_dict["data"] = d_dict
-        j_dict["message"] = m_dict
-        if msg.__class__.__name__ == GenericMessage().__class__.__name__:
-            j_dict["map"] = msg.map
-        json_str = _json.dumps(j_dict)
+        if msg.perf == None:
+            if msg.__clazz__.endswith('Req'):
+                msg.perf = Performative.REQUEST
+            else:
+                msg.perf = Performative.INFORM
+        rq = _json.dumps({'action': 'send', 'relay': relay, 'message': '###MSG###'})
+        rq = rq.replace('"###MSG###"', msg._serialize())
         name = self.socket.getpeername()
-        self.logger.debug(str(name[0]) + ":" + str(name[1]) + " >>> " + json_str)
-        self.socket.sendall((json_str + '\n').encode())
+        self.logger.debug(str(name[0]) + ":" + str(name[1]) + " >>> " + rq)
+        self.socket.sendall((rq + '\n').encode())
         return True
+        # j_dict = dict()
+        # m_dict = OrderedDict()
+        # d_dict = dict()
+        # j_dict["action"] = Action.SEND
+        # j_dict["relay"] = relay
+        # msg.sender = self.name
+        # d_dict = self._to_json(msg)
+        # module_ = msg.__module__
+        # m_dict["clazz"] = module_.split('.')[-1].replace("_", ".") + "." + msg.__class__.__name__
+        # m_dict["data"] = d_dict
+        # j_dict["message"] = m_dict
+        # if msg.__class__.__name__ == GenericMessage().__class__.__name__:
+        #     j_dict["map"] = msg.map
+        # json_str = _json.dumps(j_dict)
+        # name = self.socket.getpeername()
+        # self.logger.debug(str(name[0]) + ":" + str(name[1]) + " >>> " + json_str)
+        # self.socket.sendall((json_str + '\n').encode())
+        # return True
 
     def _retrieveFromQueue(self, filter):
         rmsg = None
@@ -262,6 +317,18 @@ class Gateway:
             self.logger.critical("Error: Queue empty/timeout - " + str(e))
         return rmsg
 
+    # creates a unqualified message class based on a fully qualified name
+    def importmsg(self, name):
+        def setclazz(self, **kwargs):
+            super(class_, self).__init__()
+            self.__clazz__ = name
+            self.__dict__.update(kwargs)
+        sname = name.split('.')[-1]
+        class_ = type(sname, (Message,), {"__init__": setclazz})
+        globals()[sname] = class_
+        mod = __import__('fjagepy.org_arl_fjage_remote', fromlist=['org_arl_fjage_remote'])
+        return getattr(mod, str(class_.__name__))
+
     def receive(self, filter=None, timeout=0):
         """
         Returns a message received by the gateway and matching the given filter. This method blocks until timeout if no message available.
@@ -288,7 +355,9 @@ class Gateway:
         if not rmsg:
             return None
         try:
-            rsp = self._from_json(rmsg)
+            m = Message()
+            rsp = m._deserialize(rmsg)
+            # rsp = self._from_json(rmsg)
             found_map = False
             # add map if it is a Generic message
             if rsp.__class__.__name__ == GenericMessage().__class__.__name__:
@@ -387,14 +456,15 @@ class Gateway:
         """
 
         req_id = _uuid.uuid4()
-        j_dict = dict()
-        j_dict["action"] = Action.AGENT_FOR_SERVICE
-        j_dict["id"] = str(req_id)
-        if isinstance(service, str):
-            j_dict["service"] = service
-        else:
-            j_dict["service"] = service.__class__.__name__ + "." + str(service)
-        self.socket.sendall((_json.dumps(j_dict) + '\n').encode())
+        # j_dict = dict()
+        # j_dict["action"] = Action.AGENT_FOR_SERVICE
+        # j_dict["id"] = str(req_id)
+        # if isinstance(service, str):
+        #     j_dict["service"] = service
+        # else:
+        #     j_dict["service"] = service.__class__.__name__ + "." + str(service)
+        rq = {'action': 'agentForService', 'service': service, 'id': str(req_id)}
+        self.socket.sendall((_json.dumps(rq) + '\n').encode())
         res_event = _td.Event()
         self.pending[req_id] = (res_event, None)
         ret = res_event.wait(timeout)
@@ -432,117 +502,6 @@ class Gateway:
     def getAgentID(self):
         """ Returns the gateway Agent ID."""
         return self.name
-
-    def _to_json(self, inst):
-        """Convert the object attributes to a dict."""
-
-        dt = inst.__dict__.copy()
-        for i in list(dt):
-            if i == 'data' or i == 'signal':
-                if type(dt[i]) == numpy.ndarray:
-                    dt[i] = dt[i].tolist()
-        for key in list(dt):
-            if dt[key] == None:
-                dt.pop(key)
-            elif list(key)[-1] == '_':
-                dt[key[:-1]] = dt.pop(key)
-            if key == 'map':
-                dt.pop(key)
-        return dt
-
-    def _from_json(self, dt):
-        """If possible, do class loading, else return the dict."""
-
-        if 'clazz' in dt:
-            class_name = dt['clazz'].split(".")[-1]
-            module_name = dt['clazz'].split(".")
-            module_name.remove(module_name[-1])
-            if "fjage" in module_name:
-                module_name = "fjagepy." + "_".join(module_name)
-            else:
-                module_name = "unetpy." + "_".join(module_name)
-            try:
-                module = __import__(module_name)
-            except Exception as e:
-                self.logger.critical("Exception in from_json, module: " + str(e))
-                return dt
-            try:
-                class_ = getattr(module, class_name)
-            except Exception as e:
-                self.logger.critical("Exception in from_json, class: " + str(e))
-                return dt
-            args = dict()
-            for key, value in dt["data"].items():
-                args[key] = value
-            if 'signal' in args.keys():
-                type_ = args['signal']['clazz']
-                x_ = base64.standard_b64decode(args['signal']['data'])
-                count = len(x_) // 4
-                if 'F' in type_:
-                    x_ = struct.unpack('<{0}f'.format(count), x_)
-                elif 'I' in type_:
-                    x_ = struct.unpack('<{0}i'.format(count), x_)
-                elif 'D' in type_:
-                    x_ = struct.unpack('<{0}d'.format(count), x_)
-                elif 'J' in type_:
-                    x_ = struct.unpack('<{0}l'.format(count), x_)
-                args["signal"]["data"] = list(x_)
-                del args["signal"]["clazz"]
-                args["signal"] = args["signal"]["data"]
-            elif 'data' in args.keys():
-                type_ = args['data']['clazz']
-                x_ = base64.standard_b64decode(args['data']['data'])
-                count = len(x_) // 4
-                if 'F' in type_:
-                    x_ = struct.unpack('<{0}f'.format(count), x_)
-                elif 'I' in type_:
-                    x_ = struct.unpack('<{0}i'.format(count), x_)
-                elif 'D' in type_:
-                    x_ = struct.unpack('<{0}d'.format(count), x_)
-                elif 'J' in type_:
-                    x_ = struct.unpack('<{0}l'.format(count), x_)
-                args["data"]["data"] = list(x_)
-                del args["data"]["clazz"]
-                args["data"] = args["data"]["data"]
-            elif 'values' or 'value' in args.keys():
-                if 'values' in args.keys():
-                    for i, j in args["values"].items():
-                        if isinstance(j, dict):
-                            if 'clazz' in j and '[' in j['clazz']:
-                                type_ = j['data']['clazz']
-                                if 'F' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data']['data'], 'utf-8')), dtype=numpy.float32)
-                                    args["values"][i] = list(x_)
-                                elif 'I' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data']['data'], 'utf-8')), dtype=numpy.int16)
-                                    args["values"][i] = list(x_)
-                                elif 'D' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data']['data'], 'utf-8')), dtype=numpy.float64)
-                                    args["values"][i] = list(x_)
-                                elif 'J' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data']['data'], 'utf-8')), dtype=numpy.int32)
-                                    args["values"][i] = list(x_)
-                elif 'value' in args.keys() and type(args["value"]) == dict:
-                    for i, j in args["value"].items():
-                        if isinstance(j, dict):
-                            if 'clazz' in j and '[' in j['clazz']:
-                                type_ = j['clazz']
-                                if 'F' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data'], 'utf-8')), dtype=numpy.float32)
-                                    args["value"] = list(x_)
-                                elif 'I' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data'], 'utf-8')), dtype=numpy.int16)
-                                    args["value"] = list(x_)
-                                elif 'D' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data'], 'utf-8')), dtype=numpy.float64)
-                                    args["value"] = list(x_)
-                                elif 'J' in type_:
-                                    x_ = numpy.frombuffer(base64.decodestring(bytearray(j['data'], 'utf-8')), dtype=numpy.int32)
-                                    args["value"] = list(x_)
-            inst = class_(**args)
-        else:
-            inst = dt
-        return inst
 
     def _is_duplicate(self):
         req_id = _uuid.uuid4()
